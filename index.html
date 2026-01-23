@@ -1,0 +1,1831 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>104ème Bataillon "Wolfpack" - Holonet Officiel</title>
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="./img/logo2.png">
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Fonts Sci-Fi -->
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700;900&family=Rajdhani:wght@300;400;500;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+    <!-- Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <style>
+        :root {
+            --wolf-dark: #0f1219;
+            --wolf-panel: #1a202c;
+            --wolf-grey: #4A5568;
+            --wolf-blue: #7c90b1; /* Bleu gris militaire */
+            --wolf-blue-dim: #4a5e7d;
+            --alert-red: #9B2C2C;
+            --term-green: #33ff33;
+            --holo-cyan: #00f0ff;
+            --holo-cyan-dim: rgba(0, 240, 255, 0.3);
+        }
+
+        body {
+            font-family: 'Rajdhani', sans-serif;
+            color: #cbd5e0;
+            overflow-x: hidden;
+            /* Fond épuré et noble : Dégradé radial subtil du gris très sombre vers le noir */
+            background: radial-gradient(circle at 50% 30%, #1a202c 0%, #050505 70%, #000000 100%);
+            min-height: 100vh;
+        }
+
+        /* SCANLINE EFFECT OVERLAY */
+        .scanlines {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: linear-gradient(
+                to bottom,
+                rgba(255, 255, 255, 0),
+                rgba(255, 255, 255, 0) 50%,
+                rgba(0, 0, 0, 0.15) 50%,
+                rgba(0, 0, 0, 0.15)
+            );
+            background-size: 100% 3px;
+            pointer-events: none;
+            z-index: 9990; /* Au-dessus de tout sauf le boot screen */
+            opacity: 0.4;
+        }
+
+        h1, h2, h3, .tech-font, .nav-item {
+            font-family: 'Orbitron', sans-serif;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .mono-font { font-family: 'Share Tech Mono', monospace; }
+
+        /* --- TERMINAL BOOT SCREEN --- */
+        #boot-screen {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background-color: #000;
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            font-family: 'Share Tech Mono', monospace;
+            color: var(--wolf-blue);
+            overflow: hidden;
+        }
+
+        .boot-background-log {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 200%; 
+            padding: 2rem;
+            opacity: 0.3;
+            z-index: 0;
+            font-size: 0.8rem;
+            pointer-events: none;
+            line-height: 1.4;
+            color: #4a5e7d;
+            animation: scrollLogs 60s linear infinite;
+        }
+
+        @keyframes scrollLogs {
+            0% { transform: translateY(0); }
+            100% { transform: translateY(-50%); }
+        }
+
+        .loading-window {
+            z-index: 10;
+            background: rgba(15, 18, 25, 0.95);
+            border: 1px solid var(--wolf-blue);
+            padding: 2rem;
+            width: 90%;
+            max-width: 600px;
+            box-shadow: 0 0 50px rgba(0, 0, 0, 0.8), 0 0 20px rgba(124, 144, 177, 0.2);
+            text-align: center;
+            backdrop-filter: blur(5px);
+            position: relative;
+        }
+        
+        .loading-window::before, .loading-window::after {
+            content: ''; position: absolute; width: 20px; height: 20px;
+            border-color: var(--wolf-blue); border-style: solid;
+            transition: all 0.5s;
+        }
+        .loading-window::before { top: -1px; left: -1px; border-width: 2px 0 0 2px; }
+        .loading-window::after { bottom: -1px; right: -1px; border-width: 0 2px 2px 0; }
+
+        .progress-container {
+            width: 100%;
+            height: 6px;
+            background: #1a202c;
+            margin-top: 1.5rem;
+            border: 1px solid #4a5e7d;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .progress-bar {
+            height: 100%;
+            background: var(--wolf-blue);
+            width: 0%;
+            box-shadow: 0 0 15px var(--wolf-blue);
+            transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .scan-line {
+            position: absolute; top: 0; left: 0; width: 100%; height: 5px;
+            background: rgba(124, 144, 177, 0.2);
+            animation: scan 3s linear infinite;
+            z-index: 10000;
+            pointer-events: none;
+        }
+        @keyframes scan { 0% {top: -10%;} 100% {top: 110%;} }
+
+        /* --- UI ELEMENTS --- */
+        .holo-panel {
+            /* Base State before animation */
+            background: rgba(26, 32, 44, 0.6);
+            border: 1px solid rgba(124, 144, 177, 0.3);
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(5px);
+            position: relative;
+            overflow: hidden;
+        }
+        .holo-panel::before {
+            content: ''; position: absolute; top: 0; left: 0; width: 4px; height: 100%;
+            background: var(--wolf-blue);
+        }
+        
+        .corner-accent {
+            position: absolute; width: 10px; height: 10px;
+            border-top: 2px solid var(--wolf-blue);
+            border-right: 2px solid var(--wolf-blue);
+            top: 0; right: 0;
+        }
+
+        /* Navigation */
+        .nav-item {
+            position: relative; cursor: pointer; transition: 0.3s;
+            color: #718096;
+            white-space: nowrap;
+        }
+        .nav-item:hover, .nav-item.active { color: var(--wolf-blue); text-shadow: 0 0 8px rgba(124, 144, 177, 0.5); }
+        .nav-item.active::after {
+            content: ''; position: absolute; bottom: -5px; left: 0; width: 100%; height: 2px;
+            background: var(--wolf-blue);
+        }
+
+        /* Cards & Interactive Elements */
+        .interactive-card {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+            border: 1px solid transparent;
+        }
+        .interactive-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--wolf-blue);
+            box-shadow: 0 10px 20px -5px rgba(0, 0, 0, 0.6);
+        }
+        .interactive-card:hover .card-overlay { opacity: 1; }
+
+        .card-overlay {
+            opacity: 0; transition: 0.3s;
+            background: linear-gradient(0deg, rgba(15,18,25,0.9) 0%, transparent 100%);
+        }
+
+        /* MODAL SYSTEM */
+        #detail-modal {
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+        }
+        #detail-modal.open {
+            opacity: 1;
+            visibility: visible;
+            pointer-events: auto;
+        }
+
+        .modal-content-box {
+            background: rgba(15, 18, 25, 0.95);
+            border: 1px solid var(--wolf-blue);
+            box-shadow: 0 0 50px rgba(0,0,0,0.8), inset 0 0 20px rgba(124, 144, 177, 0.1);
+        }
+
+        /* Stats Bars */
+        .stat-bar-bg { background: #2d3748; height: 4px; width: 100%; }
+        .stat-bar-fill { height: 100%; background: var(--wolf-blue); box-shadow: 0 0 5px var(--wolf-blue); }
+
+        /* Animation Classes */
+        .fade-in { animation: fadeIn 0.5s forwards; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        
+        .blueprint-grid {
+            background-image: 
+                linear-gradient(rgba(124, 144, 177, 0.05) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(124, 144, 177, 0.05) 1px, transparent 1px);
+            background-size: 20px 20px;
+        }
+
+        /* Video Placeholder Effect */
+        .video-placeholder {
+            position: relative;
+            overflow: hidden;
+            border: 1px solid #4a5e7d;
+            background: #000;
+        }
+        .video-placeholder::after {
+            content: "REC • [LIVE FEED]";
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            color: var(--alert-red);
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 0.7rem;
+            animation: blink 2s infinite;
+        }
+        /* Specific override for vehicles */
+        .video-placeholder.no-rec::after {
+            display: none;
+        }
+        
+        @keyframes blink { 50% { opacity: 0; } }
+
+        /* =========================================
+           JARVIS BUILD EFFECT (OPTION B)
+           ========================================= */
+        
+        /* Base hidden state */
+        .jarvis-build {
+            opacity: 0;
+            border-color: transparent;
+            background: transparent;
+            box-shadow: none;
+        }
+        
+        /* The Content inside must be hidden initially */
+        .jarvis-build > * {
+            opacity: 0;
+        }
+
+        /* 1. Structure (Draw Borders) */
+        .jarvis-build.phase-1 {
+            opacity: 1;
+            border-color: var(--holo-cyan);
+            box-shadow: 0 0 15px var(--holo-cyan);
+            transition: border-color 0.1s, box-shadow 0.1s;
+        }
+
+        /* 2. Fill (Background Flash) */
+        .jarvis-build.phase-2 {
+            background: rgba(0, 240, 255, 0.1); /* Bright flash */
+            transition: background 0.2s ease-out;
+        }
+
+        /* 3. Stabilize (Normal BG) */
+        .jarvis-build.phase-3 {
+            background: rgba(26, 32, 44, 0.6);
+            border-color: rgba(124, 144, 177, 0.3);
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
+            transition: background 0.5s ease-out, border-color 0.5s, box-shadow 0.5s;
+        }
+        
+        /* 4. Data (Show Content with Flicker) */
+        .jarvis-build.phase-4 > * {
+            animation: holoFlicker 0.5s forwards;
+        }
+        
+        /* 5. DONE (Static state - No Animation to prevent replay on tab switch) */
+        .jarvis-build.phase-5 > * {
+            opacity: 1;
+            animation: none;
+        }
+
+        @keyframes holoFlicker {
+            0% { opacity: 0; }
+            10% { opacity: 0.5; }
+            20% { opacity: 0.1; }
+            30% { opacity: 0.8; }
+            40% { opacity: 0.2; }
+            50% { opacity: 1; }
+            60% { opacity: 0.9; }
+            70% { opacity: 0.4; }
+            100% { opacity: 1; }
+        }
+
+        /* JARVIS INTERFACE EFFECT (Simple fade for Header/Restored cards) */
+        .jarvis-element {
+            opacity: 0;
+            transform: translateY(30px) scale(0.95);
+            transition: all 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
+        }
+        .jarvis-element.visible {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+        }
+
+        /* Helper for images */
+        .img-cover { width: 100%; height: 100%; object-fit: cover; }
+
+        /* GALACTIC MAP STYLES */
+        .galaxy-map {
+            width: 100%;
+            height: 350px;
+            background: radial-gradient(circle at center, #0f1219 0%, #000 100%);
+            position: relative;
+            overflow: hidden;
+            border: 1px solid #4a5e7d;
+            border-radius: 8px;
+        }
+        .galaxy-lines {
+            position: absolute; inset: 0;
+            opacity: 0.4;
+            pointer-events: none;
+        }
+        .planet-node {
+            position: absolute;
+            width: 12px; height: 12px;
+            background: #fff;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 0 10px #fff;
+            z-index: 10;
+        }
+        .planet-node:hover { transform: scale(1.5); box-shadow: 0 0 20px var(--holo-cyan); background: var(--holo-cyan); }
+        .planet-node.danger { background: var(--alert-red); box-shadow: 0 0 10px var(--alert-red); }
+        .planet-node.urban { background: #ecc94b; box-shadow: 0 0 10px #ecc94b; }
+        
+        /* VENATOR NODE STYLE */
+        .venator-node {
+            position: absolute;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            width: 30px; height: 30px;
+            background: rgba(0, 100, 255, 0.2);
+            border: 1px solid var(--wolf-blue);
+            border-radius: 50%;
+            display: flex; justify-content: center; align-items: center;
+            cursor: pointer;
+            z-index: 20;
+            box-shadow: 0 0 20px rgba(0, 100, 255, 0.5);
+            animation: pulse-base 2s infinite;
+        }
+        .venator-node:hover { background: rgba(0, 100, 255, 0.4); }
+        @keyframes pulse-base { 0% { box-shadow: 0 0 0 0 rgba(99, 179, 237, 0.4); } 70% { box-shadow: 0 0 0 10px rgba(99, 179, 237, 0); } 100% { box-shadow: 0 0 0 0 rgba(99, 179, 237, 0); } }
+
+        .planet-label {
+            position: absolute; top: -25px; left: 50%; transform: translateX(-50%);
+            font-size: 10px; color: #fff; opacity: 0; transition: opacity 0.3s;
+            pointer-events: none; white-space: nowrap; font-family: 'Share Tech Mono', monospace;
+            background: rgba(0,0,0,0.8); padding: 2px 4px; border-radius: 4px;
+            border: 1px solid #444;
+        }
+        .planet-node:hover .planet-label, .venator-node:hover .planet-label { opacity: 1; }
+
+        /* HANGAR STYLES */
+        .blueprint-card {
+            background-image: 
+                linear-gradient(0deg, transparent 24%, rgba(0, 150, 255, .1) 25%, rgba(0, 150, 255, .1) 26%, transparent 27%, transparent 74%, rgba(0, 150, 255, .1) 75%, rgba(0, 150, 255, .1) 76%, transparent 77%, transparent),
+                linear-gradient(90deg, transparent 24%, rgba(0, 150, 255, .1) 25%, rgba(0, 150, 255, .1) 26%, transparent 27%, transparent 74%, rgba(0, 150, 255, .1) 75%, rgba(0, 150, 255, .1) 76%, transparent 77%, transparent);
+            background-size: 50px 50px;
+            background-color: #0b1019;
+        }
+        
+        /* MEDAL PLAQUE STYLES */
+        .medal-plaque {
+            background: linear-gradient(90deg, rgba(20,25,35,0.95) 0%, rgba(30,35,45,0.9) 100%);
+            border: 1px solid #2d3748;
+            border-left-width: 4px;
+            display: flex;
+            align-items: center;
+            padding: 1.5rem;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+        
+        .medal-plaque:hover {
+            transform: translateX(5px);
+            background: linear-gradient(90deg, rgba(25,30,45,0.95) 0%, rgba(40,45,60,0.9) 100%);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+        }
+
+        .medal-plaque::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-image: linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+            background-size: 10px 10px;
+            pointer-events: none;
+        }
+
+        .medal-icon-container {
+            width: 80px; height: 80px;
+            flex-shrink: 0;
+            background: radial-gradient(circle at center, #2d3748 0%, #1a202c 100%);
+            border-radius: 50%;
+            border: 2px solid #4a5568;
+            display: flex; justify-content: center; align-items: center;
+            margin-right: 1.5rem;
+            box-shadow: inset 0 0 10px rgba(0,0,0,0.5);
+            position: relative;
+            z-index: 1;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col overflow-hidden-y">
+
+    <!-- SCANLINE OVERLAY -->
+    <div class="scanlines"></div>
+
+    <!-- TERMINAL BOOT SCREEN -->
+    <div id="boot-screen">
+        <div class="scan-line"></div>
+        <!-- Background scrolling logs (ANIMATED) -->
+        <div id="terminal-logs" class="boot-background-log font-mono"></div>
+        
+        <!-- Centered Loading Window -->
+        <div class="loading-window">
+            <h2 class="text-2xl text-white mb-2 tech-font tracking-widest">WOLFPACK OS <span class="text-xs align-top text-blue-400">v.7.9</span></h2>
+            <div class="h-px w-full bg-blue-900/50 mb-4"></div>
+            <div class="text-sm text-blue-300 font-mono mb-2 flex justify-between">
+                <span id="boot-status">Initializing...</span>
+                <span id="boot-percentage">0%</span>
+            </div>
+            <div class="progress-container">
+                <div class="progress-bar" id="boot-progress"></div>
+            </div>
+            <div class="mt-4 flex justify-center space-x-2 text-xs text-gray-500 font-mono">
+                <span id="random-hash">HASH: ---</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- MAIN INTERFACE -->
+    <div id="app-content" class="flex flex-col min-h-screen opacity-0 transition-opacity duration-1000 hidden">
+        
+        <!-- HEADER (REMOVED JARVIS BUILD, ADDED SIMPLE FADE) -->
+        <header class="border-b border-gray-800 bg-gray-900/90 sticky top-0 z-40 backdrop-blur-md jarvis-element">
+            <div class="container mx-auto px-4 py-3 flex justify-between items-center">
+                <div class="flex items-center space-x-3 cursor-pointer" onclick="switchTab('home')">
+                    <div class="w-10 h-10 border border-gray-600 rounded flex items-center justify-center bg-gray-800 group hover:border-blue-400 transition overflow-hidden">
+                        <!-- LOGO DU BATAILLON -->
+                        <img src="./img/logo2.png" class="w-full h-full object-contain">
+                    </div>
+                    <div>
+                        <h1 class="text-xl font-bold tracking-wider text-gray-200">104th <span style="color: var(--wolf-blue)">WOLFPACK</span></h1>
+                        <p class="text-[10px] text-gray-500 uppercase tracking-[0.2em]">Réseau Tactique Sécurisé</p>
+                    </div>
+                </div>
+                
+                <nav class="hidden xl:flex space-x-6 text-sm">
+                    <div class="nav-item active" onclick="switchTab('home')">QG</div>
+                    <div class="nav-item" onclick="switchTab('history')">Archives</div>
+                    <div class="nav-item" onclick="switchTab('members')">Effectifs</div>
+                    <div class="nav-item" onclick="switchTab('arsenal')">Armurerie</div>
+                    <div class="nav-item" onclick="switchTab('hangar')">Hangar</div>
+                    <div class="nav-item" onclick="switchTab('medals')">Médailles</div>
+                    <div class="nav-item" onclick="switchTab('fangs')">Ordre des Crocs</div>
+                    <div class="nav-item" onclick="switchTab('recruitment')">Recrutement</div>
+                </nav>
+
+                <div class="flex items-center space-x-4">
+                    <!-- GALACTIC CLOCK -->
+                    <div class="hidden md:block text-right border-r border-gray-700 pr-4 mr-2">
+                        <div class="text-xs text-blue-400 font-mono" id="galactic-time">--:--</div>
+                        <div class="text-[10px] text-gray-500 uppercase tracking-widest" id="time-label">CORUSCANT</div>
+                    </div>
+
+                    <div class="hidden md:block text-right">
+                        <div class="text-xs text-gray-500">MATRICULE</div>
+                        <div class="text-xs text-green-400 font-mono" id="header-ct-id">CT-????</div>
+                    </div>
+                    <button class="xl:hidden text-gray-300" onclick="document.getElementById('mobile-menu').classList.toggle('hidden')">
+                        <i data-lucide="menu"></i>
+                    </button>
+                </div>
+            </div>
+            <!-- Mobile Menu -->
+            <div id="mobile-menu" class="hidden xl:hidden bg-gray-900 border-b border-gray-700 p-4 space-y-3">
+                <div class="nav-item py-2" onclick="switchTab('home')">QG</div>
+                <div class="nav-item py-2" onclick="switchTab('history')">Archives</div>
+                <div class="nav-item py-2" onclick="switchTab('members')">Effectifs</div>
+                <div class="nav-item py-2" onclick="switchTab('arsenal')">Armurerie</div>
+                <div class="nav-item py-2" onclick="switchTab('hangar')">Hangar</div>
+                <div class="nav-item py-2" onclick="switchTab('medals')">Médailles</div>
+                <div class="nav-item py-2" onclick="switchTab('fangs')">Ordre des Crocs</div>
+                <div class="nav-item py-2" onclick="switchTab('recruitment')">Recrutement</div>
+            </div>
+        </header>
+
+        <!-- MAIN CONTENT -->
+        <main class="flex-grow container mx-auto px-4 py-8 relative">
+
+            <!-- 1. ACCUEIL (QG) -->
+            <section id="home" class="section-content active">
+                <div class="grid lg:grid-cols-12 gap-8">
+                    <!-- Left Column: Main Briefing -->
+                    <div class="lg:col-span-8 space-y-6">
+                        <div class="holo-panel p-8 rounded-lg jarvis-build">
+                            <div class="corner-accent"></div>
+                            <h2 class="text-3xl text-white mb-2">Bienvenue au QG, Soldat</h2>
+                            <p class="text-wolf-blue-dim text-sm font-mono mb-6">/ AUTHENTIFICATION: <span id="home-ct-id">CT-????</span> / NIVEAU: COMMANDEMENT /</p>
+                            
+                            <div class="prose prose-invert max-w-none text-gray-300 leading-relaxed">
+                                <p class="text-lg font-light mb-4">
+                                    <strong class="text-blue-300">La Compagnie Wolfpack</strong> est l'unité d'élite du 104ème Bataillon. Nous ne sommes pas de simples soldats ; nous sommes la garde rapprochée du Commandant Maréchal et le bras armé du Général Plo Koon.
+                                </p>
+                                <p class="mb-4">
+                                    Nos missions sont critiques : <strong>Protection rapprochée, Assauts tactiques, Reconnaissance avancée et Tir de couverture</strong>. Là où les autres bataillons reculent, la meute avance. Nous opérons dans l'obscurité pour que la République reste dans la lumière.
+                                </p>
+                                <div class="p-6 bg-gray-800/50 border-l-4 border-blue-500 text-center">
+                                    <h3 class="text-lg text-white font-bold italic tracking-widest tech-font">"Loyauté, Fraternité, Puissance !"</h3>
+                                </div>
+                            </div>
+
+                            <div class="mt-8 flex flex-wrap gap-4">
+                                <button onclick="switchTab('history')" class="bg-blue-900/30 hover:bg-blue-900/50 border border-blue-500/50 text-blue-200 px-6 py-3 rounded flex items-center transition w-full md:w-auto justify-center">
+                                    <i data-lucide="file-clock" class="mr-2 w-4 h-4"></i> Accéder aux Archives
+                                </button>
+                                <button onclick="switchTab('recruitment')" class="bg-gray-800 hover:bg-gray-700 border border-gray-600 text-gray-300 px-6 py-3 rounded flex items-center transition w-full md:w-auto justify-center">
+                                    <i data-lucide="user-plus" class="mr-2 w-4 h-4"></i> Rejoindre les Rangs
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- HOLO-CARTE GALACTIQUE -->
+                        <div class="holo-panel p-0 rounded-lg jarvis-build overflow-hidden border border-gray-700">
+                            <div class="bg-gray-900/80 p-3 border-b border-gray-700 flex justify-between items-center">
+                                <span class="text-xs font-mono text-blue-300">CARTE TACTIQUE V.3 [CONNEXION SATELLITE]</span>
+                                <div class="flex items-center space-x-2">
+                                    <span class="text-[10px] text-green-400 font-mono animate-pulse">EN DIRECT</span>
+                                    <div class="w-2 h-2 bg-green-500 rounded-full"></div>
+                                </div>
+                            </div>
+                            <div class="galaxy-map" id="galaxy-map">
+                                <!-- SVG Lines for Tactical Effect -->
+                                <svg class="galaxy-lines" width="100%" height="100%">
+                                    <circle cx="50%" cy="50%" r="20%" fill="none" stroke="#2d3748" stroke-width="1" stroke-dasharray="5,5" />
+                                    <circle cx="50%" cy="50%" r="35%" fill="none" stroke="#2d3748" stroke-width="1" />
+                                    <circle cx="50%" cy="50%" r="45%" fill="none" stroke="#2d3748" stroke-width="1" stroke-dasharray="2,8" />
+                                    <line x1="50%" y1="50%" x2="90%" y2="20%" stroke="#4a5e7d" stroke-width="1" opacity="0.3" />
+                                    <line x1="50%" y1="50%" x2="10%" y2="80%" stroke="#4a5e7d" stroke-width="1" opacity="0.3" />
+                                    <line x1="50%" y1="50%" x2="80%" y2="80%" stroke="#4a5e7d" stroke-width="1" opacity="0.3" />
+                                    <!-- Additional vector lines for new planets -->
+                                    <line x1="50%" y1="50%" x2="20%" y2="30%" stroke="#4a5e7d" stroke-width="1" opacity="0.3" />
+                                    <line x1="50%" y1="50%" x2="70%" y2="70%" stroke="#4a5e7d" stroke-width="1" opacity="0.3" />
+                                </svg>
+
+                                <!-- Venator Center Node -->
+                                <div class="venator-node" onclick="openMissionModal('flotte')">
+                                    <i data-lucide="triangle" class="w-4 h-4 text-blue-300 fill-current transform rotate-180"></i>
+                                    <div class="planet-label">FLOTTE COSMOS</div>
+                                </div>
+
+                                <!-- Interactive Nodes -->
+                                <div class="planet-node" style="top: 30%; left: 70%;" onclick="openMissionModal('aleen')">
+                                    <div class="planet-label">ALEEN</div>
+                                </div>
+                                <div class="planet-node danger" style="top: 20%; left: 25%;" onclick="openMissionModal('abregado')">
+                                    <div class="planet-label">ABREGADO</div>
+                                </div>
+                                <div class="planet-node" style="top: 75%; left: 40%; background: #a0aec0;" onclick="openMissionModal('kamino')">
+                                    <div class="planet-label">KAMINO</div>
+                                </div>
+                                <div class="planet-node danger" style="top: 60%; left: 85%;" onclick="openMissionModal('felucia')">
+                                    <div class="planet-label">FELUCIA</div>
+                                </div>
+                                <!-- New Nodes -->
+                                <div class="planet-node urban" style="top: 15%; left: 60%;" onclick="openMissionModal('christophsis')">
+                                    <div class="planet-label">CHRISTOPHSIS</div>
+                                </div>
+                                <div class="planet-node danger" style="top: 80%; left: 20%;" onclick="openMissionModal('kadavo')">
+                                    <div class="planet-label">KADAVO</div>
+                                </div>
+                                <div class="planet-node danger" style="top: 40%; left: 10%; background: #e53e3e; box-shadow: 0 0 15px #e53e3e;" onclick="openMissionModal('lola')">
+                                    <div class="planet-label">LOLA SAYU</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Right Column: Holo Feed & Visuals -->
+                    <div class="lg:col-span-4 space-y-6">
+                        <!-- WOLF CO-LEADER CARD (CLEAN BLACK BG - NO DIAMONDS) -->
+                        <div class="holo-panel rounded-lg overflow-hidden h-64 relative flex items-center justify-center bg-black jarvis-build">
+                            <!-- Removed the diamond texture div here as requested -->
+                            <div class="text-center z-10 relative">
+                                <div class="w-32 h-32 mx-auto border-4 border-double border-blue-500/50 rounded-full flex items-center justify-center mb-4 shadow-[0_0_20px_rgba(124,144,177,0.3)] bg-black/50 backdrop-blur overflow-hidden">
+                                    <!-- AVATAR DU LEADER (VIDEO) -->
+                                    <video src="./img/warthog.webm" class="w-full h-full object-cover" autoplay loop muted playsinline></video>
+                                </div>
+                                <h3 class="text-blue-300 text-xl tracking-widest bg-black/50 px-2 rounded">WOLFPACK CO-LEADER</h3>
+                                <p class="text-xs text-gray-500">Canal Direct</p>
+                            </div>
+                        </div>
+
+                        <div class="holo-panel p-6 rounded-lg jarvis-build">
+                            <h3 class="text-sm text-gray-400 border-b border-gray-700 pb-2 mb-4">Canal Comms : PRIORITAIRE</h3>
+                            <div class="space-y-6 text-xs font-mono">
+                                
+                                <!-- Message 1: Warthog -->
+                                <div>
+                                    <div class="flex justify-between text-yellow-500 mb-1">
+                                        <span class="font-bold">2435 WARTHOG</span>
+                                        <span>08:00</span>
+                                    </div>
+                                    <p class="text-gray-300 italic bg-gray-900/50 p-2 rounded border-l-2 border-yellow-500">
+                                        "À tous les soldats de la Grande Armée. La phase de sélection pour la Wolfpack est ouverte. Nous ne cherchons pas de simples clones, nous recrutons l'élite absolue pour des missions à haut risque. Si vous pensez avoir l'étoffe pour porter le gris, c'est le moment."
+                                    </p>
+                                </div>
+
+                                <!-- Message 2: Wolffe -->
+                                <div>
+                                    <div class="flex justify-between text-blue-400 mb-1">
+                                        <span class="font-bold">CMDM WOLFFE</span>
+                                        <span>08:05</span>
+                                    </div>
+                                    <p class="text-gray-300 italic bg-gray-900/50 p-2 rounded border-l-2 border-blue-500">
+                                        "L'insigne du loup se mérite par le sang et la sueur. Je n'accepterai aucune faiblesse dans mes rangs. Si vous voulez servir à mes côtés et protéger le Général, prouvez votre valeur sur le terrain. La perfection est le standard minimum exigé."
+                                    </p>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 2. ARCHIVES -->
+            <section id="history" class="section-content fade-in hidden">
+                <div class="max-w-6xl mx-auto">
+                    <h2 class="text-3xl text-blue-300 mb-8 border-b border-gray-800 pb-4">Archives Classifiées du Bataillon</h2>
+                    
+                    <div class="grid lg:grid-cols-2 gap-8">
+                        <!-- Data File 1 -->
+                        <div class="holo-panel p-6 rounded group hover:border-blue-500/50 transition duration-300">
+                            
+                            <div class="flex items-center justify-between mb-4 border-b border-gray-700 pb-2">
+                                <h3 class="text-xl text-white font-bold group-hover:text-blue-300">DOSSIER #01 : Les Origines</h3>
+                                <span class="text-xs font-mono text-gray-500">PHASE I</span>
+                            </div>
+                            <div class="text-gray-400 text-sm leading-relaxed text-justify space-y-4">
+                                <p>
+                                    Avant de forger la légende de la "Wolfpack", le 104ème Bataillon était une unité standard de la Grande Armée de la République, identifiée par des marquages <strong class="text-yellow-700">marrons</strong> sur leurs armures Phase I.
+                                </p>
+                                <p>
+                                    Déployés dès le début de la guerre, ces hommes servaient avec honneur sous le commandement du Général Plo Koon. À cette époque, l'unité était vaste, comprenant une flotte de combat complète dédiée à la sécurisation des bordures extérieures et à la chasse aux pirates soutenus par les Séparatistes.
+                                </p>
+                            </div>
+                        </div>
+
+                         <!-- Data File 2 -->
+                         <div class="holo-panel p-6 rounded group hover:border-red-500/50 transition duration-300">
+
+                            <div class="flex items-center justify-between mb-4 border-b border-gray-700 pb-2">
+                                <h3 class="text-xl text-red-400 font-bold group-hover:text-red-300">DOSSIER #02 : Abregado</h3>
+                                <span class="text-xs font-mono text-red-900">INCIDENT CRITIQUE</span>
+                            </div>
+                            <div class="text-gray-400 text-sm leading-relaxed text-justify space-y-4">
+                                <p>
+                                    Le tournant tragique de notre histoire. Envoyée intercepter une mystérieuse super-arme Séparatiste dans le système Abregado, la flotte du 104ème s'est retrouvée face au <em>Malevolence</em>, le vaisseau amiral du Général Grievous équipé d'un canon ionique dévastateur.
+                                </p>
+                                <p>
+                                    En un instant, l'énergie de nos vaisseaux fut drainée. Impuissants, nos frères furent massacrés par les batteries turbolasers ennemies. Il n'y eut aucune reddition possible, seulement le vide froid. Les "Pods Hunters" furent envoyés pour achever les survivants.
+                                </p>
+                                <p>
+                                    Seuls quatre survécurent : Le Général Plo Koon, le Commandant Wolffe, le Sergent Sinker et le soldat Boost. Ils furent secourus in extremis par le Général Skywalker et le Commandant Tano.
+                                </p>
+                            </div>
+                        </div>
+
+                         <!-- Data File 3 -->
+                         <div class="holo-panel p-6 rounded group hover:border-blue-500/50 transition duration-300">
+
+                            <div class="flex items-center justify-between mb-4 border-b border-gray-700 pb-2">
+                                <h3 class="text-xl text-blue-300 font-bold group-hover:text-white">DOSSIER #03 : La Meute (Wolfpack)</h3>
+                                <span class="text-xs font-mono text-blue-900">REFONTE</span>
+                            </div>
+                            <div class="text-gray-400 text-sm leading-relaxed text-justify space-y-4">
+                                <p>
+                                    De retour sur Coruscant, les survivants refusèrent de se laisser briser. Pour honorer la mémoire des milliers de frères perdus à Abregado, le Commandant Wolffe ordonna un changement radical d'identité visuelle. Le marron fut abandonné pour le <strong>Gris Silex et le Bleu-Gris</strong>, couleurs de deuil et de résilience.
+                                </p>
+                                <p>
+                                    L'unité adopta l'emblème du Loup. Pourquoi ? Parce que le loup survit grâce à sa meute. Chaque soldat devint une extension de l'autre. La discipline devint plus stricte, l'entraînement plus brutal. La Wolfpack n'était plus une simple unité d'infanterie, mais une force d'élite spécialisée dans les environnements hostiles.
+                                </p>
+                            </div>
+                        </div>
+
+                         <!-- Data File 4 -->
+                         <div class="holo-panel p-6 rounded group hover:border-green-500/50 transition duration-300">
+
+                            <div class="flex items-center justify-between mb-4 border-b border-gray-700 pb-2">
+                                <h3 class="text-xl text-white font-bold group-hover:text-green-300">DOSSIER #04 : Opérations Actuelles</h3>
+                                <span class="text-xs font-mono text-green-900">ACTIF</span>
+                            </div>
+                            <div class="text-gray-400 text-sm leading-relaxed text-justify space-y-4">
+                                <p>
+                                    Aujourd'hui, le 104ème est reconnu comme l'une des unités les plus efficaces de la Grande Armée. Nous avons mené des opérations cruciales sur Felucia, Khorm et Kadavo.
+                                </p>
+                                <p>
+                                    Nous sommes spécialisés dans les missions de secours (comme sur Aleen) où notre capacité à opérer sans soutien lourd est vitale. Le lien entre les clones et le Général Plo Koon est unique ; il n'est pas seulement un officier supérieur, il est le "Wolf Leader", un membre de la meute à part entière. Sa philosophie, valorisant la vie de chaque clone ("Pour moi, vous ne l'êtes pas"), est le cœur battant de notre unité.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 3. EFFECTIFS (ROSTER) -->
+            <section id="members" class="section-content fade-in hidden">
+                <div class="flex justify-between items-end mb-8">
+                    <h2 class="text-3xl text-white">Chaine de Commandement</h2>
+                    <div class="text-xs font-mono text-gray-500">CLIQUEZ POUR ACCÉDER AU DOSSIER</div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="roster-grid">
+                    <!-- JS will generate cards here -->
+                </div>
+            </section>
+
+            <!-- 4. ARMURERIE (REFONTE TOTALE VISUELLE) -->
+            <section id="arsenal" class="section-content fade-in hidden">
+                <div class="flex items-center justify-between mb-8 border-b border-gray-800 pb-4">
+                    <h2 class="text-3xl text-white">Arsenal & Logistique</h2>
+                    <span class="text-xs font-mono text-blue-400 border border-blue-900 px-2 py-1 rounded bg-blue-900/10">ACCÈS AUTORISÉ</span>
+                </div>
+                
+                <div class="grid lg:grid-cols-2 gap-8" id="arsenal-grid">
+                    <!-- JS will generate new Visual Cards here -->
+                </div>
+            </section>
+
+            <!-- 5. HANGAR (NEW) -->
+            <section id="hangar" class="section-content fade-in hidden">
+                <div class="flex items-center justify-between mb-8 border-b border-gray-800 pb-4">
+                    <h2 class="text-3xl text-white">Hangar Tactique</h2>
+                    <span class="text-xs font-mono text-blue-400 border border-blue-900 px-2 py-1 rounded bg-blue-900/10">ACCÈS RESTREINT: PILOTES CERTIFIÉS</span>
+                </div>
+                
+                <div class="grid grid-cols-1 gap-10" id="vehicle-grid">
+                    <!-- JS generated -->
+                </div>
+            </section>
+
+            <!-- 6. MÉDAILLES (NEW & IMPROVED) -->
+            <section id="medals" class="section-content fade-in hidden">
+                <div class="flex items-center justify-center mb-10">
+                    <i data-lucide="award" class="text-yellow-500 w-12 h-12 mr-4"></i>
+                    <div>
+                        <h2 class="text-4xl text-white font-bold tracking-wider tech-font">MUR DES DISTINCTIONS</h2>
+                        <p class="text-yellow-600 font-mono text-sm mt-1">RECONNAISSANCE & HONNEUR</p>
+                    </div>
+                </div>
+                
+                <div class="flex flex-col space-y-6" id="medals-grid">
+                    <!-- JS generated as horizontal plaques -->
+                </div>
+            </section>
+
+            <!-- 7. L'ORDRE DES CROCS -->
+            <section id="fangs" class="section-content fade-in hidden">
+                <div class="flex items-center justify-center mb-10">
+                    <div class="p-4 bg-gray-800 rounded-full border-2 border-red-900 mr-6">
+                        <i data-lucide="swords" class="w-10 h-10 text-red-500"></i>
+                    </div>
+                    <div>
+                        <h2 class="text-4xl text-white font-bold tracking-wider tech-font">L'ORDRE DES CROCS</h2>
+                        <p class="text-red-400 font-mono text-sm mt-1">SYSTÈME DE CLASSEMENT INTERNE</p>
+                    </div>
+                </div>
+
+                <div class="grid lg:grid-cols-12 gap-8">
+                    
+                    <!-- Left: Rules -->
+                    <div class="lg:col-span-7">
+                        <div class="holo-panel p-8 rounded-lg border-l-4 border-red-900 h-full">
+                            <h3 class="text-2xl text-white font-bold mb-6 flex items-center">
+                                <i data-lucide="scroll" class="mr-3 text-gray-400"></i> Code d'Honneur
+                            </h3>
+                            
+                            <div class="space-y-6">
+                                <div class="flex">
+                                    <div class="mr-4 text-red-500 font-bold font-mono text-xl">01</div>
+                                    <div>
+                                        <h4 class="text-white font-bold mb-1">Le Défi Ascendant</h4>
+                                        <p class="text-gray-400 text-sm">Pour monter en grade, un membre doit défier un adversaire classé directement au-dessus de lui. Chaque membre porte un numéro (I étant le Maître, X la recrue).</p>
+                                    </div>
+                                </div>
+
+                                <div class="flex">
+                                    <div class="mr-4 text-red-500 font-bold font-mono text-xl">02</div>
+                                    <div>
+                                        <h4 class="text-white font-bold mb-1">L'Échange de Sang</h4>
+                                        <p class="text-gray-400 text-sm">Si le challenger gagne, il prend le rang de son adversaire. Le vaincu chute à l'ancienne place du challenger. L'échange est immédiat.</p>
+                                    </div>
+                                </div>
+
+                                <div class="flex">
+                                    <div class="mr-4 text-red-500 font-bold font-mono text-xl">03</div>
+                                    <div>
+                                        <h4 class="text-white font-bold mb-1">Privilège du Défenseur</h4>
+                                        <p class="text-gray-400 text-sm">Le membre défié choisit le format du duel parmi les standards validés : Combat Tactique, Grappin, Jump, ou Duel Jetpacks.</p>
+                                    </div>
+                                </div>
+
+                                <div class="flex">
+                                    <div class="mr-4 text-red-500 font-bold font-mono text-xl">04</div>
+                                    <div>
+                                        <h4 class="text-white font-bold mb-1">Validation & Arbitrage</h4>
+                                        <p class="text-gray-400 text-sm">Tout duel doit être validé par le CMDM. Une tierce personne neutre doit arbitrer la confrontation pour garantir l'équité.</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="mt-8 pt-6 border-t border-gray-700 text-center">
+                                <span class="text-xs text-gray-500 uppercase tracking-widest">Limite : Un défi autorisé par semaine</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Right: Visual Rank Hierarchy -->
+                    <div class="lg:col-span-5">
+                        <div class="holo-panel p-6 rounded-lg bg-black/40 border border-gray-800">
+                            <h3 class="text-center text-gray-400 font-mono text-sm mb-6">HIÉRARCHIE ACTUELLE</h3>
+                            
+                            <div class="space-y-2 relative">
+                                <!-- Connecting Line -->
+                                <div class="absolute left-6 top-4 bottom-4 w-0.5 bg-gray-800 z-0"></div>
+
+                                <!-- Rank I (Top) -->
+                                <div class="relative z-10 flex items-center bg-yellow-900/20 border border-yellow-700/50 p-3 rounded mb-4">
+                                    <div class="w-12 h-12 bg-yellow-900 rounded-full flex items-center justify-center font-bold text-yellow-200 border-2 border-yellow-500 mr-4 shadow-[0_0_15px_rgba(234,179,8,0.3)]">I</div>
+                                    <div>
+                                        <div class="text-xs text-yellow-500 uppercase font-bold">Distinction : Croc Alpha</div>
+                                        <div class="text-white font-mono">CHAMPION INVAINCU</div>
+                                    </div>
+                                </div>
+
+                                <!-- Rank II - V -->
+                                <div class="relative z-10 flex items-center bg-gray-900/80 border border-gray-700 p-2 rounded ml-4">
+                                    <div class="w-8 h-8 bg-gray-800 rounded-full flex items-center justify-center font-bold text-gray-400 border border-gray-600 mr-3">II</div>
+                                    <div class="text-gray-300 text-sm">Combattant Élite</div>
+                                </div>
+                                <div class="relative z-10 flex items-center bg-gray-900/80 border border-gray-700 p-2 rounded ml-4">
+                                    <div class="w-8 h-8 bg-gray-800 rounded-full flex items-center justify-center font-bold text-gray-400 border border-gray-600 mr-3">III</div>
+                                    <div class="text-gray-300 text-sm">Combattant Élite</div>
+                                </div>
+                                
+                                <!-- Gap -->
+                                <div class="ml-12 text-gray-600 text-xs py-2 text-center">. . .</div>
+
+                                <!-- Rank X (Bottom) -->
+                                <div class="relative z-10 flex items-center bg-gray-900/50 border border-gray-800 p-2 rounded ml-4 opacity-75">
+                                    <div class="w-8 h-8 bg-black rounded-full flex items-center justify-center font-bold text-gray-600 border border-gray-700 mr-3">X</div>
+                                    <div class="text-gray-500 text-sm">Initié</div>
+                                </div>
+                            </div>
+
+                            <div class="mt-6 p-4 bg-red-900/10 border border-red-900/30 rounded text-center">
+                                <p class="text-red-400 text-xs italic">"Visez le sommet, ou restez dans l'ombre."</p>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </section>
+
+            <!-- 8. RECRUTEMENT -->
+            <section id="recruitment" class="section-content fade-in hidden">
+                <div class="flex flex-col items-center justify-center text-center mb-10">
+                    <h2 class="text-4xl text-white font-bold mb-2 tracking-wider tech-font">REJOIGNEZ LA MEUTE</h2>
+                    <div class="h-1 w-24 bg-blue-500 rounded"></div>
+                    <p class="text-gray-400 mt-4 max-w-2xl">
+                        "La force du loup est dans la meute, et la force de la meute est dans le loup."
+                    </p>
+                </div>
+
+                <div class="grid lg:grid-cols-2 gap-8">
+                    <!-- Column 1: Formalités -->
+                    <div class="holo-panel p-8 rounded-lg border-t-4 border-blue-500 flex flex-col justify-between">
+                        <div>
+                            <div class="flex items-center space-x-3 mb-6">
+                                <div class="p-3 bg-blue-900/20 rounded border border-blue-500/30">
+                                    <i data-lucide="clipboard-check" class="text-blue-400 w-6 h-6"></i>
+                                </div>
+                                <h3 class="text-2xl text-white font-bold">Protocoles de Sélection</h3>
+                            </div>
+                            
+                            <ul class="space-y-6 text-gray-300">
+                                <li class="flex items-start">
+                                    <i data-lucide="check-circle" class="text-green-500 w-5 h-5 mr-4 mt-1 flex-shrink-0"></i>
+                                    <div>
+                                        <strong class="text-white text-lg">Maîtrise du Grappin & Jetpack</strong>
+                                        <p class="text-gray-400 text-sm mt-2 font-light leading-relaxed">Expertise obligatoire dans le déploiement vertical et la mobilité aérienne (Certif JT-12 & Grappin Ascensionnel).</p>
+                                    </div>
+                                </li>
+                                <li class="flex items-start">
+                                    <i data-lucide="check-circle" class="text-green-500 w-5 h-5 mr-4 mt-1 flex-shrink-0"></i>
+                                    <div>
+                                        <strong class="text-white text-lg">Reconnaissance Avancée</strong>
+                                        <p class="text-gray-400 text-sm mt-2 font-light leading-relaxed">Capacité démontrée à opérer en territoire hostile pour la collecte de renseignements.</p>
+                                    </div>
+                                </li>
+                                <li class="flex items-start">
+                                    <i data-lucide="alert-circle" class="text-yellow-500 w-5 h-5 mr-4 mt-1 flex-shrink-0"></i>
+                                    <div>
+                                        <strong class="text-white text-lg">Procédure d'Engagement</strong>
+                                        <p class="text-gray-400 text-sm mt-2 font-light leading-relaxed">Pour initier le protocole de test, rapprochez-vous d'un membre gradé de la Wolfpack. Aucune candidature électronique.</p>
+                                    </div>
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="mt-8 p-4 bg-gray-900 border border-gray-700 rounded text-center">
+                            <span class="text-blue-400 font-mono text-sm blink">>> CONTACT DIRECT REQUIS <<</span>
+                        </div>
+                    </div>
+
+                    <!-- Column 2: ARC Trooper Pathway -->
+                    <div class="holo-panel p-8 rounded-lg border-t-4 border-yellow-500 relative overflow-hidden group">
+                        <!-- [IMAGE] ZONE IMAGE ARC TROOPER -->
+                        <!-- <img src="chemin/vers/arc-trooper-bg.jpg" class="absolute inset-0 w-full h-full object-cover opacity-20"> -->
+                        <div class="absolute inset-0 bg-yellow-500/5 group-hover:bg-yellow-500/10 transition"></div>
+                        <div class="relative z-10">
+                            <div class="flex items-center space-x-3 mb-6">
+                                <div class="p-3 bg-yellow-900/20 rounded border border-yellow-500/30">
+                                    <i data-lucide="medal" class="text-yellow-400 w-6 h-6"></i>
+                                </div>
+                                <h3 class="text-2xl text-white font-bold">La Voie de l'ARC</h3>
+                            </div>
+
+                            <p class="text-gray-300 text-sm leading-relaxed mb-6">
+                                Rejoindre la Wolfpack n'est que le début. Pour l'élite de l'élite, nous offrons une passerelle vers le statut convoité de <strong>Soldat ARC (Advanced Recon Commando)</strong>.
+                            </p>
+
+                            <div class="bg-gray-900/50 p-4 rounded border border-gray-700 mb-6">
+                                <h4 class="text-yellow-400 font-bold text-xs uppercase mb-2">Opportunités de Carrière</h4>
+                                <p class="text-gray-400 text-xs">
+                                    Les soldats démontrant une initiative exceptionnelle peuvent être recommandés par le Commandant Wolffe pour le programme de formation ARC sur Kamino. Devenez le fer de lance de la République.
+                                </p>
+                            </div>
+
+                            <div class="flex items-center justify-between text-xs font-mono text-gray-500">
+                                <span>TAUX D'ADMISSION: 1.5%</span>
+                                <span class="text-yellow-500">STATUS: ÉLITE</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+        </main>
+    </div>
+
+    <!-- GLOBAL DETAIL MODAL -->
+    <div id="detail-modal" class="fixed inset-0 z-50 flex items-center justify-center">
+        <div class="absolute inset-0 bg-black/80 backdrop-blur-sm" onclick="closeModal()"></div>
+        
+        <div class="modal-content-box relative w-full max-w-2xl mx-4 p-6 transform scale-95 transition-transform duration-300" id="modal-container">
+            <button class="absolute top-4 right-4 text-gray-400 hover:text-white" onclick="closeModal()"><i data-lucide="x"></i></button>
+            
+            <div id="modal-content" class="grid md:grid-cols-3 gap-6">
+                <!-- Content injected via JS -->
+            </div>
+            
+            <div class="mt-6 pt-4 border-t border-gray-800 flex justify-between items-center text-xs font-mono text-gray-500">
+                <span>CLASSIFIÉ: NIVEAU 4</span>
+                <span>WOLFPACK DATABASE</span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        lucide.createIcons();
+
+        // --- DATA REPOSITORY ---
+        // [IMAGE] Pour chaque membre, remplacez la valeur de 'image' par le nom de votre fichier (ex: "wolffe.jpg")
+        // Assurez-vous que les images sont dans le même dossier ou indiquez le chemin correct.
+        const membersData = [
+            {
+                id: "plo",
+                name: "Général Plo Koon",
+                rank: "Général Jedi",
+                image: "./img/plokoon.webm", 
+                role: "Wolf Leader",
+                bio: "Kel Dor, membre du Conseil Jedi. Contrairement à beaucoup de Jedi, Plo Koon valorise la vie individuelle de ses clones. Il est un pilote expert et maîtrise une variante de la Force (Electric Judgment)."
+            },
+            {
+                id: "wolffe",
+                name: "CC-3636 'Wolffe'",
+                rank: "Commandant Maréchal",
+                image: "./img/wolffe.webm", 
+                role: "Commandement Tactique",
+                bio: "Leader endurci et pragmatique. A perdu son œil droit face à Ventress. Il dirige la Wolfpack avec une discipline de fer mais une loyauté absolue. Son armure porte les cicatrices de mille batailles."
+            },
+            {
+                id: "warthog",
+                name: "ADJ 2435 'Warthog'",
+                rank: "Adjudant",
+                image: "./img/warthog.webm", 
+                role: "As Pilote",
+                bio: "Pilote vétéran ayant servi sous Plo Koon dans de nombreuses batailles spatiales. Il est capable de faire voler une canonnière dans un trou de souris."
+            },
+            {
+                id: "tracer",
+                name: "SGT-C 7394 'Tracer'",
+                rank: "Sergent-Chef",
+                image: "./img/tracer.webm", 
+                role: "Co Pilote",
+                bio: "Spécialisé dans les missions de reconnaissance et de combat aérien. Son surnom vient de son talent exceptionnel pour repérer, suivre et éliminer ses cibles avec une précision redoutable"
+            },
+            {
+                id: "sinker",
+                name: "SGT 2302 'Sinker'",
+                rank: "Sergent",
+                image: "./img/sinker.webm", 
+                role: "Support Lourd & Discipline",
+                bio: "Vétéran de l'Abregado. Sinker est calme, direct et souvent celui qui garde la tête froide quand la situation dégénère. Expert en déploiement d'armes lourdes."
+            },
+             {
+                id: "boost",
+                name: "CPL 4860 'Boost'",
+                rank: "Caporal",
+                image: "./img/boost.webm",
+                role: "Spécialiste Véhicule & Assaut",
+                bio: "Survivant de la bataille d'Abregado. Boost est un pilier de la Wolfpack, formant souvent un binôme avec Sinker. Expert en pilotage de véhicules et en déploiement rapide, il incarne la ténacité du bataillon."
+            },
+            {
+                id: "comet",
+                name: "SGT 8925 'Comet'",
+                rank: "Sergent",
+                image: "./img/comet.webm", 
+                role: "Tech & Communications",
+                bio: "Reconnaissable à ses marquages d'armure spécifiques. Comet est souvent chargé de la liaison radio et de la coordination des véhicules au sol."
+            }
+        ];
+
+        // Missions Data Repository
+        const missionsData = [
+            {
+                id: "flotte",
+                title: "FLOTTE COSMOS",
+                type: "QG Mobile / Destroyer Venator",
+                status: "En Orbite",
+                desc: "Le cœur battant de la Wolfpack. Ce Destroyer Stellaire de classe Venator sert de base d'opérations principale. Il abrite nos chasseurs ARC-170, nos canonnières LAAT/i et l'ensemble du personnel tactique. C'est ici que sont planifiées toutes les interventions majeures dans la Bordure Extérieure.",
+                outcome: "Opérationnel à 100%"
+            },
+            {
+                id: "aleen",
+                title: "MISSION ALEEN",
+                type: "Secours Humanitaire",
+                status: "Terminée",
+                desc: "Suite à des séismes planétaires dévastateurs, la 104ème a été déployée en urgence pour sécuriser les zones d'atterrissage et fournir une aide médicale à la population locale. La mission a nécessité une coordination étroite avec les droïdes traducteurs pour rétablir le dialogue avec le peuple souterrain.",
+                outcome: "Succès Total. Population stabilisée."
+            },
+            {
+                id: "abregado",
+                title: "INCIDENT ABREGADO",
+                type: "Combat Spatial / Survie",
+                status: "Échec Critique / Classifié",
+                desc: "La flotte du 104ème, sous le commandement de Plo Koon, a intercepté le croiseur lourd Séparatiste 'Malevolence'. L'ennemi a déployé une arme ionique inconnue, neutralisant tous les systèmes de la flotte. S'en est suivi un massacre systématique des capsules de sauvetage par les Pods Hunters.",
+                outcome: "Pertes: 98%. Survivants: Plo Koon, Wolffe, Sinker, Boost."
+            },
+            {
+                id: "kamino",
+                title: "DÉFENSE DE KAMINO",
+                type: "Défense Planétaire",
+                status: "Victoire Stratégique",
+                desc: "Les Séparatistes ont lancé un assaut massif sur Tipoca City pour détruire les installations de clonage. La Wolfpack a été chargée de la défense des hangars inférieurs et de la protection des stocks génétiques. Wolffe et ses hommes ont repoussé plusieurs vagues de droïdes aqua.",
+                outcome: "Installations sécurisées. Production maintenue."
+            },
+            {
+                id: "felucia",
+                title: "CAMPAGNE DE FELUCIA",
+                type: "Guerre de Tranchées",
+                status: "En Cours",
+                desc: "Déploiement en soutien au 327ème Corps Stellaire. L'environnement fongique dense et la faune hostile rendent la progression difficile. La mission consiste à percer les lignes de droïdes pour sécuriser les stations d'épuration d'eau.",
+                outcome: "Progression lente. Résistance forte."
+            },
+            {
+                id: "christophsis",
+                title: "SIÈGE DE CHRISTOPHSIS",
+                type: "Combat Urbain",
+                status: "Victoire",
+                desc: "Intervention dans la Cité de Cristal pour briser le blocus Séparatiste. La Wolfpack a mené des opérations de guérilla urbaine pour désactiver les boucliers énergétiques ennemis, permettant l'arrivée des renforts lourds.",
+                outcome: "Ville libérée. Traître appréhendé."
+            },
+            {
+                id: "kadavo",
+                title: "EXTRACTION DE KADAVO",
+                type: "Infiltration / Sauvetage",
+                status: "Terminée",
+                desc: "Mission conjointe pour libérer les colons Togruta réduits en esclavage dans les installations minières de Kadavo. L'opération a nécessité l'utilisation de jetpacks pour un assaut vertical audacieux sur les tours de traitement suspendues.",
+                outcome: "Esclaves libérés. Installation détruite."
+            },
+            {
+                id: "lola",
+                title: "LA CITADELLE",
+                type: "Opération Black Ops",
+                status: "Pertes Lourdes",
+                desc: "Tentative d'extraction du Maître Jedi Even Piell de la prison de la Citadelle sur Lola Sayu. La Wolfpack a fourni un soutien tactique en orbite pour tenter de percer le blocus Séparatiste impénétrable.",
+                outcome: "Extraction partielle. Données Nexus sécurisées."
+            }
+        ];
+
+        // Arsenal Data with Stats (UPDATED COLORS)
+        // [IMAGE] Pour chaque arme, le système cherche une image correspondant à l'ID (ex: "dc15s.jpg")
+        // Vous pouvez ajouter une propriété 'imagePath' si vous voulez spécifier un chemin précis.
+        const arsenalData = [
+            {
+                id: "dc15s",
+                name: "DC-15S Carbine",
+                type: "Carabine",
+                icon: "crosshair",
+                color: "blue",
+                image: "./img/DC15S.jpg",
+                desc: "La DC-15S est une arme 'secondaire', idéale pour les combats à courte portée, notamment dans les bâtiments. Compacte et légère, elle excelle également comme l'une des rares armes pouvant être utilisée avec un jetpack.",
+                manu: "Blastech Industries",
+                stats: { power: 65, range: 40, rate: 85, stability: 90 },
+                video: "./img/DC15S.webm"
+            },
+            {
+                id: "dc15le",
+                name: "DC-15LE Long Range",
+                type: "Fusil Précision",
+                icon: "target",
+                color: "blue", 
+                image: "./img/DC15LE.jpg",
+                desc: "La DC-15LE est un fusil de longue portée souvent désigné comme un fusil de précision. Sa longue portée et sa puissance en font une arme très efficace sur le champ de bataille.",
+                manu: "Blastech Industries",
+                stats: { power: 90, range: 95, rate: 30, stability: 70 },
+                video: "./img/DC15LE.webm"
+            },
+            {
+                id: "dc17",
+                name: "Dual DC-17 Blasters",
+                type: "Arme de Poing",
+                icon: "crosshair",
+                color: "blue",
+                image: "./img/DC17.jpg",
+                desc: "Paire de pistolets blasters lourds favorisés par les officiers supérieurs et les soldats ARC. Cadence de tir élevée et puissance d'arrêt redoutable à courte portée.",
+                manu: "Blastech Industries",
+                stats: { power: 55, range: 30, rate: 95, stability: 65 },
+                video: "./img/dual dc.webm"
+            },
+            {
+                id: "hunter",
+                name: "Hunter Shotgun",
+                type: "Fusil à Pompe",
+                icon: "crosshair", 
+                color: "blue",
+                image: "./img/pompe.jpg",
+                desc: "Fusil à dispersion dévastateur à bout portant. Utilisé pour le nettoyage de tranchées et les abordages. Faible cadence de tir mais impact massif.",
+                manu: "Czerka Arms",
+                stats: { power: 95, range: 15, rate: 35, stability: 55 },
+                video: "./img/pompe.webm" 
+            },
+            {
+                id: "jetpack",
+                name: "Jetpack JT-12",
+                type: "Mobilité",
+                icon: "wind",
+                color: "cyan",
+                image: "./img/jetpack.jpg",
+                desc: "Dispositif dorsal essentiel pour les Wolfpacks, leur permettant de s'envoler et de se déplacer rapidement. Permet de franchir des obstacles et d'atteindre des positions en hauteur.",
+                manu: "Merr-Sonn Munitions",
+                stats: { power: 80, range: 60, rate: 40, stability: 15 },
+                video: "./img/jetpack.webm"
+            },
+            {
+                id: "grapple",
+                name: "Grappin Ascensionnel",
+                type: "Utilitaire",
+                icon: "anchor",
+                color: "gray",
+                image: "./img/grappin.jpg",
+                desc: "Outil essentiel lorsque le jetpack est inutilisable. Il permet de prendre de la hauteur facilement et de couvrir de longues distances pour atteindre rapidement des positions stratégiques.",
+                manu: "Standard Issue",
+                stats: { power: 0, range: 80, rate: 50, stability: 95 },
+                video: "./img/grappin.webm"
+            },
+            {
+                id: "detpack",
+                name: "Detpack Explosif",
+                type: "Sabotage",
+                icon: "bomb",
+                color: "orange",
+                image: "./img/detpack.png",
+                desc: "Petits explosifs équipés d'un déclencheur à distance activable à volonté. Peuvent être placés ou lancés. Particulièrement utiles pour détruire des obstacles.",
+                manu: "Merr-Sonn Munitions",
+                stats: { power: 100, range: 20, rate: 10, stability: 40 },
+                video: "./img/detpack.webm"
+            },
+            {
+                id: "smoke",
+                name: "Grenade Fumigène",
+                type: "Tactique",
+                icon: "cloud",
+                color: "gray",
+                image: "./img/fumi.jpg",
+                desc: "Générateur de fumée dense obscurcissant instantanément le champ de vision. Essentiel pour couvrir les mouvements de la meute ou effectuer des retraites stratégiques.",
+                manu: "Explosive Dynamics",
+                stats: { power: 0, range: 50, rate: 60, stability: 100 },
+                video: "./img/fumi.webm"
+            },
+            {
+                id: "impact",
+                name: "Grenade à Impact",
+                type: "Grenade",
+                icon: "zap",
+                color: "blue",
+                image: "./img/gre.jpg",
+                desc: "Ordonnance explosive détonant immédiatement au contact d'une surface dure. Conçue pour neutraliser les droïdes de combat sans laisser de temps de réaction à l'ennemi.",
+                manu: "Explosive Dynamics",
+                stats: { power: 85, range: 35, rate: 90, stability: 20 },
+                video: "./img/grenade.webm"
+            }
+        ];
+
+        // Vehicles Data
+        const vehiclesData = [
+            { 
+                id: "arc170", 
+                name: "Chasseur ARC-170", 
+                type: "Chasseur Lourd", 
+                image: "./img/arc170.jpg", 
+                desc: "Chasseur lourd de reconnaissance agressif. Modifié personnellement par l'Adjudant Warthog pour une maniabilité accrue. Pilotable exclusivement par Warthog.", 
+                manu: "Incom Corporation",
+                pilots: [
+                    {name: "Warthog", img: "./img/warthog.webm"}
+                ],
+                stats: { speed: 85, firepower: 80, armor: 55, maneuverability: 80 }
+            },
+            { 
+                id: "laat_i", 
+                name: "LAAT/i Gunship", 
+                type: "Transport d'Assaut", 
+                image: "./img/laati.jpg", 
+                desc: "Transport d'infanterie offensif. Pilotable par les experts Warthog et Tracer pour les insertions à haut risque.", 
+                manu: "Rothana Heavy Engineering",
+                pilots: [
+                    {name: "Warthog", img: "./img/warthog.webm"},
+                    {name: "Tracer", img: "./img/tracer.webm"}
+                ],
+                stats: { speed: 60, firepower: 75, armor: 90, maneuverability: 50 }
+            },
+            { 
+                id: "laat_c", 
+                name: "LAAT/c Carrier", 
+                type: "Transport de Fret", 
+                image: "./img/laatc.jpg", 
+                desc: "Variante cargo pour le déploiement de l'AT-TE. Pilotable par Warthog et Tracer pour le largage de matériel lourd.", 
+                manu: "Rothana Heavy Engineering",
+                pilots: [
+                    {name: "Warthog", img: "./img/warthog.webm"},
+                    {name: "Tracer", img: "./img/tracer.webm"}
+                ],
+                stats: { speed: 50, firepower: 40, armor: 90, maneuverability: 45 }
+            }
+        ];
+
+        // Medals Data (UPDATED WITH IMAGES)
+        // [IMAGE] Ajoutez vos images de médailles ici (ex: ./img/medal_ardent.png)
+        const medalsData = [
+            { 
+                id: "ardent", 
+                name: "Médaille du Loup Ardent", 
+                image: "./img/loupardent.png", 
+                color: "border-orange-500", 
+                desc: "Elle symbolise le courage, la détermination et la capacité à agir sous pression, même face à un danger imminent." 
+            },
+            { 
+                id: "scarlet", 
+                name: "Étoile du Loup Écarlate", 
+                image: "./img/loupecarlate.png", 
+                color: "border-red-600", 
+                desc: "Récompense les unités d'élite assurant avec excellence la protection du CMDM Wolffe et incarnant la loyauté, la justice et la discipline." 
+            },
+            { 
+                id: "predator", 
+                name: "Étoile du Prédateur", 
+                image: "./img/predateur.png", 
+                color: "border-yellow-400", 
+                desc: "La plus haute distinction de la compagnie Wolfpack. Réservée aux vétérans ayant au moins 3 mois de service actif et récompense leur excellence." 
+            }
+        ];
+
+        // --- FUNCTIONS ---
+
+        // Random CT Number Generator
+        function generateRandomCT() {
+            const num = Math.floor(Math.random() * 8999) + 1000;
+            return `CT-${num}`;
+        }
+
+        // Random Hash Generator
+        function generateHash() {
+            return Math.random().toString(36).substring(2, 10).toUpperCase();
+        }
+
+        // Galactic Clock Logic
+        function updateGalacticClock() {
+            const timeEl = document.getElementById('galactic-time');
+            if(!timeEl) return;
+
+            const now = new Date();
+            // Local Time
+            const localHours = String(now.getHours()).padStart(2, '0');
+            const localMinutes = String(now.getMinutes()).padStart(2, '0');
+            
+            // "Coruscant" Time (UTC for example, or randomized offset)
+            const coruscantOffset = 2; // +2 hours
+            let cHours = (now.getHours() + coruscantOffset) % 24;
+            const cHoursStr = String(cHours).padStart(2, '0');
+
+            // Alternate every 5 seconds
+            const seconds = now.getSeconds();
+            if(seconds % 10 < 5) {
+                timeEl.innerText = `${localHours}:${localMinutes}`;
+                document.getElementById('time-label').innerText = "LOCAL TIME";
+            } else {
+                timeEl.innerText = `${cHoursStr}:${localMinutes}`;
+                document.getElementById('time-label').innerText = "CORUSCANT";
+            }
+        }
+
+        // Map Interaction (Modal System for Missions)
+        function openMissionModal(id) {
+            const m = missionsData.find(x => x.id === id);
+            if(!m) return;
+
+            const content = `
+                <div class="md:col-span-3">
+                    <div class="flex justify-between items-start border-b border-gray-700 pb-4 mb-4">
+                        <div>
+                            <h2 class="text-3xl text-white font-bold tracking-wider">${m.title}</h2>
+                            <span class="text-blue-400 font-mono text-sm">${m.type}</span>
+                        </div>
+                        <div class="text-right">
+                            <div class="text-xs text-gray-500 uppercase tracking-widest">Statut</div>
+                            <div class="text-lg font-bold ${m.status.includes('Échec') || m.status.includes('Pertes') ? 'text-red-500' : 'text-green-400'}">${m.status}</div>
+                        </div>
+                    </div>
+
+                    <div class="grid md:grid-cols-3 gap-6">
+                        <div class="md:col-span-2">
+                            <h4 class="text-xs text-gray-500 uppercase tracking-widest mb-2">Briefing de Mission</h4>
+                            <p class="text-gray-300 text-sm leading-relaxed bg-gray-900/50 p-4 rounded border-l-2 border-blue-500">
+                                ${m.desc}
+                            </p>
+                        </div>
+                        
+                        <div class="md:col-span-1">
+                            <div class="bg-black/40 p-4 rounded border border-gray-700">
+                                <h4 class="text-xs text-gray-500 uppercase tracking-widest mb-2">Résultat Stratégique</h4>
+                                <p class="text-sm font-mono ${m.outcome.includes('Pertes') ? 'text-red-400' : 'text-yellow-400'}">
+                                    > ${m.outcome}
+                                </p>
+                            </div>
+                            <div class="mt-4 flex justify-center">
+                                <i data-lucide="crosshair" class="w-16 h-16 text-gray-700 opacity-20"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            showModal(content);
+        }
+
+        // 1. Terminal Boot Sequence (ANIMATED & INFINITE)
+        async function runBootSequence() {
+            const screen = document.getElementById('boot-screen');
+            const logs = document.getElementById('terminal-logs');
+            const app = document.getElementById('app-content');
+            const bar = document.getElementById('boot-progress');
+            const status = document.getElementById('boot-status');
+            const percent = document.getElementById('boot-percentage');
+            const hashDisplay = document.getElementById('random-hash');
+            
+            // Randomize User ID
+            const userId = generateRandomCT();
+            document.getElementById('header-ct-id').innerText = userId;
+            document.getElementById('home-ct-id').innerText = userId;
+
+            // Generate massive amounts of logs for animation
+            const generateLogs = () => {
+                let text = "";
+                for(let i=0; i<400; i++) { 
+                    const hash = Math.random().toString(16).substring(2, 8);
+                    const sys = ["KERNEL", "MEM", "NET", "BIO", "SEC"][Math.floor(Math.random()*5)];
+                    text += `<span style="opacity:${Math.random()}">[${sys}] 0x${hash} OK</span> `;
+                    if(i%8===0) text += "<br>";
+                }
+                logs.innerHTML = text;
+            };
+            generateLogs();
+
+            const sleep = ms => new Promise(r => setTimeout(r, ms));
+            
+            // Animation Steps with Random Variations
+            const steps = [
+                {p: 5, msg: "Power On Self Test (POST)..."},
+                {p: 20, msg: "Loading Kernel v7.9..."},
+                {p: 45, msg: "Mounting File Systems..."},
+                {p: 60, msg: `Authenticating ${userId}...`},
+                {p: 85, msg: "Decrypting Secure Channels..."},
+                {p: 100, msg: "System Ready."}
+            ];
+
+            for(let s of steps) {
+                const delay = Math.floor(Math.random() * 400) + 300;
+                await sleep(delay);
+                
+                bar.style.width = s.p + "%";
+                status.innerText = s.msg;
+                percent.innerText = s.p + "%";
+                hashDisplay.innerText = `HASH: ${generateHash()}`;
+            }
+            
+            await sleep(600);
+            
+            // Transition
+            screen.style.transition = "opacity 0.5s ease";
+            screen.style.opacity = 0;
+            
+            setTimeout(() => {
+                screen.style.display = 'none';
+                app.classList.remove('hidden');
+                app.classList.remove('opacity-0'); 
+                
+                // Trigger JARVIS staggered animation for build effect
+                const elements = document.querySelectorAll('.jarvis-build');
+                
+                // Show 3D Grid first
+                const grid = document.getElementById('tactical-grid-container');
+                if(grid) grid.style.opacity = '1';
+
+                // Then animate UI elements sequentially
+                elements.forEach((el, index) => {
+                    setTimeout(() => {
+                        el.classList.add('phase-1'); // Draw borders
+                        setTimeout(() => {
+                            el.classList.add('phase-2'); // Flash BG
+                            setTimeout(() => {
+                                el.classList.add('phase-3'); // Stabilize BG
+                                el.classList.add('phase-4'); // Show Content
+                                // FIX BUG FLICKER: Once done, switch to stable phase 5
+                                setTimeout(() => {
+                                    el.classList.remove('phase-4');
+                                    el.classList.add('phase-5'); 
+                                }, 550);
+                            }, 200);
+                        }, 150);
+                    }, index * 200 + 500); 
+                });
+                
+                // Simple fade for elements without build effect
+                const fadeElements = document.querySelectorAll('.jarvis-element');
+                fadeElements.forEach((el, index) => {
+                     setTimeout(() => {
+                        el.classList.add('visible');
+                    }, index * 100);
+                });
+
+                document.body.classList.remove('overflow-hidden-y');
+                // Init Grids
+                renderRoster();
+                renderArsenal();
+                renderHangar();
+                renderMedals();
+                
+                // Start Clock
+                setInterval(updateGalacticClock, 1000);
+                updateGalacticClock();
+            }, 500);
+        }
+
+        // 2. Render Roster Grid
+        function renderRoster() {
+            const grid = document.getElementById('roster-grid');
+            grid.innerHTML = membersData.map(m => `
+                <div class="interactive-card holo-panel p-0 rounded-lg overflow-hidden group" onclick="openMemberModal('${m.id}')">
+                    <div class="h-48 bg-gray-800 relative flex items-center justify-center overflow-hidden">
+                        <!-- VIDEO CARD BACKGROUND -->
+                        <video src="${m.image}" class="absolute inset-0 w-full h-full object-cover opacity-80 group-hover:opacity-100 transition group-hover:scale-105" autoplay loop muted playsinline></video>
+                        
+                        <div class="card-overlay absolute inset-0 flex items-end p-4">
+                            <span class="text-blue-300 text-xs font-bold uppercase tracking-widest">Voir le Dossier ></span>
+                        </div>
+                    </div>
+                    <div class="p-4 border-t border-gray-700">
+                        <div class="flex justify-between items-start">
+                            <h3 class="text-white font-bold text-lg">${m.name}</h3>
+                            <i data-lucide="file-text" class="text-gray-600 group-hover:text-blue-400 transition"></i>
+                        </div>
+                        <p class="text-blue-400 text-xs font-mono mb-2">${m.rank}</p>
+                        <p class="text-gray-500 text-xs line-clamp-2">${m.role}</p>
+                    </div>
+                </div>
+            `).join('');
+            lucide.createIcons();
+        }
+
+        // 3. Render Arsenal Grid 
+        function renderArsenal() {
+            const grid = document.getElementById('arsenal-grid');
+            
+            const colors = {
+                blue: "text-blue-400",
+                red: "text-red-400",
+                cyan: "text-cyan-400",
+                orange: "text-orange-400",
+                gray: "text-gray-400"
+            };
+
+            grid.innerHTML = arsenalData.map(a => `
+                <div class="interactive-card holo-panel rounded-lg p-0 border-l-4 ${a.color === 'red' ? 'border-red-500' : 'border-blue-500'} group hover:bg-gray-900/40 transition duration-300" onclick="openArsenalModal('${a.id}')">
+                    <div class="blueprint-grid p-6 flex flex-col md:flex-row gap-6">
+                        <!-- Image Placeholder Area -->
+                        <div class="md:w-1/3 flex flex-col items-center justify-center border-r border-gray-700 pr-4">
+                            <div class="w-full h-24 bg-gray-900 border border-gray-700 mb-4 flex items-center justify-center relative overflow-hidden group-hover:border-blue-500 transition">
+                                <img src="${a.image || 'https://via.placeholder.com/150x100/1a202c/718096?text=' + a.id.toUpperCase()}" class="w-full h-full object-cover">
+                                
+                                <div class="absolute inset-0 bg-blue-500/5 mix-blend-overlay"></div>
+                                <div class="absolute bottom-0 right-0 w-4 h-4 border-b border-r border-gray-500"></div>
+                            </div>
+                            <span class="text-xs font-mono text-gray-500 uppercase">${a.type}</span>
+                        </div>
+                        
+                        <!-- Content Area -->
+                        <div class="md:w-2/3">
+                            <div class="flex justify-between items-start mb-2">
+                                <h3 class="text-xl text-white font-bold tech-font group-hover:text-blue-300 transition">${a.name}</h3>
+                            </div>
+                            <div class="h-px w-full bg-gray-700 mb-3"></div>
+                            
+                            <p class="text-sm text-gray-400 leading-relaxed mb-4 line-clamp-3">
+                                ${a.desc}
+                            </p>
+                            
+                            <div class="flex justify-between items-center text-xs font-mono mt-auto pt-2 border-t border-gray-800">
+                                <span class="text-blue-300">FABRICANT:</span>
+                                <span class="text-gray-500">${a.manu}</span>
+                            </div>
+                            <div class="mt-2 text-right">
+                                <span class="text-[10px] text-green-400 uppercase tracking-widest animate-pulse">>>> Inspecter</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+            lucide.createIcons();
+        }
+
+        // 3.5 Render Hangar Grid (UPDATED to match Arsenal style)
+        function renderHangar() {
+            const grid = document.getElementById('vehicle-grid');
+            grid.innerHTML = vehiclesData.map(v => {
+                return `
+                <div class="interactive-card holo-panel rounded-lg p-0 border-l-4 border-blue-500 group hover:bg-gray-900/40 transition duration-300" onclick="openArsenalModal('${v.id}')"> <!-- Reusing openArsenalModal for now as structure is similar or make openVehicleModal -->
+                    <div class="blueprint-grid p-8 flex flex-col md:flex-row gap-8">
+                        <!-- Image Area -->
+                        <div class="md:w-1/3 flex flex-col items-center justify-center border-r border-gray-700 pr-4">
+                            <div class="w-full h-48 bg-gray-900 border border-gray-700 mb-4 flex items-center justify-center relative overflow-hidden group-hover:border-blue-500 transition">
+                                <img src="${v.image || 'https://via.placeholder.com/150x100/1a202c/718096?text=' + v.id.toUpperCase()}" class="w-full h-full object-cover">
+                                <div class="absolute inset-0 bg-blue-500/5 mix-blend-overlay"></div>
+                                <div class="absolute bottom-0 right-0 w-4 h-4 border-b border-r border-gray-500"></div>
+                            </div>
+                            <span class="text-xs font-mono text-gray-500 uppercase">${v.type}</span>
+                        </div>
+                        
+                        <!-- Content Area -->
+                        <div class="md:w-2/3 flex flex-col justify-center">
+                            <div class="flex justify-between items-start mb-4">
+                                <h3 class="text-3xl text-white font-bold tech-font group-hover:text-blue-300 transition">${v.name}</h3>
+                            </div>
+                            <div class="h-px w-full bg-gray-700 mb-6"></div>
+                            
+                            <p class="text-lg text-gray-400 leading-relaxed mb-6">
+                                ${v.desc}
+                            </p>
+                            
+                            <div class="text-right mt-auto">
+                                <span class="text-sm text-green-400 uppercase tracking-widest animate-pulse font-mono">>>> Inspecter Spécifications</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `}).join('');
+            lucide.createIcons();
+        }
+
+        function renderMedals() {
+            const grid = document.getElementById('medals-grid');
+            grid.innerHTML = medalsData.map(m => `
+                <div class="medal-plaque rounded-r-lg group cursor-pointer hover:border-l-4 hover:${m.color} transition-all duration-300">
+                    <div class="medal-icon-container group-hover:border-white transition-colors duration-300 overflow-hidden bg-black/50">
+                        <!-- [IMAGE] IMAGE MÉDAILLE -->
+                        <img src="${m.image}" alt="${m.name}" class="w-full h-full object-contain p-2 opacity-80 group-hover:opacity-100 transition shadow-[0_0_15px_rgba(255,255,255,0.1)]">
+                    </div>
+                    <div class="flex-grow">
+                        <div class="flex justify-between items-start mb-1">
+                            <h3 class="text-lg text-white font-bold tech-font group-hover:text-blue-300 transition">${m.name}</h3>
+                        </div>
+                        <div class="h-px w-12 bg-gray-600 mb-2 group-hover:w-full group-hover:bg-white transition-all duration-500"></div>
+                        <p class="text-xs text-gray-400 leading-relaxed">${m.desc}</p>
+                    </div>
+                </div>
+            `).join('');
+            // No lucide icons needed inside the loop anymore
+        }
+
+        // Modals
+        function openMemberModal(id) {
+            const m = membersData.find(x => x.id === id);
+            if(!m) return;
+
+            const content = `
+                <div class="md:col-span-1">
+                    <div class="h-64 bg-gray-800 rounded border border-gray-600 flex items-center justify-center text-gray-500 font-mono text-sm mb-4 overflow-hidden">
+                        <video src="${m.image}" class="w-full h-full object-cover" autoplay loop muted playsinline></video>
+                    </div>
+                </div>
+                <div class="md:col-span-2 text-gray-300 flex flex-col justify-center">
+                    <h2 class="text-3xl text-white font-bold mb-1">${m.name}</h2>
+                    <div class="text-blue-400 font-mono text-sm mb-6 border-b border-gray-700 pb-2">${m.rank} | ${m.role}</div>
+                    <div class="mb-4"><h4 class="text-xs text-gray-500 uppercase tracking-widest mb-2">Biographie & Service</h4><p class="text-sm leading-relaxed bg-gray-800/30 p-4 rounded border-l-2 border-blue-500">${m.bio}</p></div>
+                </div>
+            `;
+            showModal(content);
+        }
+
+        function openArsenalModal(id) {
+            // Check both arrays
+            let a = arsenalData.find(x => x.id === id);
+            let isVehicle = false;
+            
+            if (!a) {
+                a = vehiclesData.find(x => x.id === id);
+                isVehicle = true;
+            }
+            
+            if(!a) return;
+
+            // Video logic (Use Image if no video or if vehicle modal requested image)
+            let mediaHtml = '';
+            if (isVehicle) {
+                // Vehicle modal uses image
+                 mediaHtml = `<img src="${a.image}" class="absolute inset-0 w-full h-full object-cover" alt="${a.name}">`;
+            } else {
+                // Weapon modal uses video
+                if(a.video) {
+                    mediaHtml = `<video src="${a.video}" class="absolute inset-0 w-full h-full object-cover" autoplay loop muted playsinline controls></video>`;
+                } else {
+                     mediaHtml = `<div class="absolute inset-0 flex items-center justify-center text-gray-500 font-mono">NO SIGNAL</div>`;
+                }
+            }
+            
+            // Pilot logic (for Vehicles)
+            let pilotsSection = '';
+            if (isVehicle && a.pilots && a.pilots.length > 0) {
+                 const pilotsList = a.pilots.map(p => `
+                    <div class="flex items-center space-x-3 bg-gray-800/50 p-2 rounded border border-gray-700">
+                        <div class="w-10 h-10 rounded-full overflow-hidden border border-gray-500">
+                            <video src="${p.img}" class="w-full h-full object-cover" autoplay loop muted></video>
+                        </div>
+                        <span class="text-gray-300 font-mono text-sm">${p.name}</span>
+                    </div>
+                `).join('');
+                
+                pilotsSection = `
+                    <div class="mt-6 border-t border-gray-700 pt-4">
+                        <h4 class="text-xs text-gray-500 uppercase tracking-widest mb-3">Pilotes Certifiés</h4>
+                        <div class="flex flex-wrap gap-4">
+                            ${pilotsList}
+                        </div>
+                    </div>
+                `;
+            }
+
+            // Stats Logic
+            const stats = a.stats || { power: 0, range: 0, rate: 0, stability: 0 };
+            const statLabels = isVehicle ? 
+                { p1: "VITESSE", p2: "PUISSANCE", p3: "BLINDAGE", p4: "MANIABILITÉ" } : 
+                { p1: "PUISSANCE", p2: "PORTÉE", p3: "CADENCE", p4: "STABILITÉ" };
+
+            const statValues = isVehicle ? 
+                [stats.speed, stats.firepower, stats.armor, stats.maneuverability] :
+                [stats.power, stats.range, stats.rate, stats.stability];
+
+            const content = `
+                <div class="md:col-span-3">
+                    <div class="flex justify-between items-end mb-2">
+                        <h2 class="text-3xl text-white font-bold">${a.name}</h2>
+                        <span class="text-xs font-mono text-gray-500 bg-gray-800 px-2 py-1 rounded">ID: ${a.id.toUpperCase()}</span>
+                    </div>
+
+                    <!-- Media Container -->
+                    <div class="video-placeholder ${isVehicle ? 'no-rec' : ''} w-full h-48 rounded mb-6 flex items-center justify-center bg-black relative border border-gray-700 overflow-hidden">
+                         ${mediaHtml}
+                    </div>
+
+                    <div class="grid md:grid-cols-2 gap-6">
+                        <!-- Stats Column -->
+                        <div>
+                             <h4 class="text-xs text-gray-500 uppercase tracking-widest mb-3 border-b border-gray-700 pb-1">Données Tactiques</h4>
+                             <div class="space-y-3">
+                                <div>
+                                    <div class="flex justify-between text-xs text-gray-400 mb-1"><span>${statLabels.p1}</span><span>${statValues[0]}%</span></div>
+                                    <div class="h-1 bg-gray-800 rounded overflow-hidden"><div class="h-full bg-red-500" style="width:${statValues[0]}%"></div></div>
+                                </div>
+                                <div>
+                                    <div class="flex justify-between text-xs text-gray-400 mb-1"><span>${statLabels.p2}</span><span>${statValues[1]}%</span></div>
+                                    <div class="h-1 bg-gray-800 rounded overflow-hidden"><div class="h-full bg-blue-500" style="width:${statValues[1]}%"></div></div>
+                                </div>
+                                <div>
+                                    <div class="flex justify-between text-xs text-gray-400 mb-1"><span>${statLabels.p3}</span><span>${statValues[2]}%</span></div>
+                                    <div class="h-1 bg-gray-800 rounded overflow-hidden"><div class="h-full bg-green-500" style="width:${statValues[2]}%"></div></div>
+                                </div>
+                                <div>
+                                    <div class="flex justify-between text-xs text-gray-400 mb-1"><span>${statLabels.p4}</span><span>${statValues[3]}%</span></div>
+                                    <div class="h-1 bg-gray-800 rounded overflow-hidden"><div class="h-full bg-yellow-500" style="width:${statValues[3]}%"></div></div>
+                                </div>
+                             </div>
+                        </div>
+
+                        <!-- Description Column -->
+                        <div>
+                             <h4 class="text-xs text-gray-500 uppercase tracking-widest mb-3 border-b border-gray-700 pb-1">Description Technique</h4>
+                             <p class="text-gray-300 text-sm leading-relaxed bg-gray-800/30 p-3 rounded border-l-2 border-white mb-2">
+                                ${a.desc}
+                            </p>
+                            <div class="text-xs text-gray-500 mt-2 font-mono">
+                                > FABRICANT: ${a.manu}<br>
+                                > STATUT: OPÉRATIONNEL<br>
+                                > MAINTENANCE: REQUISE 0%
+                            </div>
+                            ${pilotsSection}
+                        </div>
+                    </div>
+                </div>
+            `;
+            showModal(content);
+        }
+
+        function showModal(html) {
+            const modal = document.getElementById('detail-modal');
+            document.getElementById('modal-content').innerHTML = html;
+            modal.classList.add('open');
+            document.getElementById('modal-container').classList.remove('scale-95');
+            document.getElementById('modal-container').classList.add('scale-100');
+            lucide.createIcons();
+        }
+
+        function closeModal() {
+            const modal = document.getElementById('detail-modal');
+            modal.classList.remove('open');
+            document.getElementById('modal-container').classList.add('scale-95');
+            document.getElementById('modal-container').classList.remove('scale-100');
+        }
+
+        // Standard Tab Switching
+        function switchTab(tabId) {
+            document.querySelectorAll('.section-content').forEach(s => {
+                s.classList.add('hidden');
+                s.classList.remove('active');
+            });
+            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+            
+            const target = document.getElementById(tabId);
+            target.classList.remove('hidden');
+            setTimeout(() => target.classList.add('active'), 10);
+
+            // Update Nav State
+            const navItems = document.querySelectorAll('.nav-item');
+            navItems.forEach(item => {
+                if(item.getAttribute('onclick').includes(tabId)) item.classList.add('active');
+            });
+
+            document.getElementById('mobile-menu').classList.add('hidden');
+        }
+
+        // INIT
+        window.addEventListener('load', runBootSequence);
+        
+        // DYNAMIC TITLE SWITCHER
+        let docTitle = document.title;
+        window.addEventListener("blur", () => {
+            document.title = "Connexion perdue...";
+        });
+        window.addEventListener("focus", () => {
+            document.title = docTitle;
+        });
+
+    </script>
+</body>
+</html>
