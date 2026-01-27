@@ -254,9 +254,7 @@
         
         @keyframes blink { 50% { opacity: 0; } }
 
-        /* =========================================
-           JARVIS BUILD EFFECT (OPTION B)
-           ========================================= */
+        /* JARVIS BUILD EFFECT */
         
         /* Base hidden state */
         .jarvis-build {
@@ -468,7 +466,7 @@
     <!-- MAIN INTERFACE -->
     <div id="app-content" class="flex flex-col min-h-screen opacity-0 transition-opacity duration-1000 hidden">
         
-        <!-- HEADER (REMOVED JARVIS BUILD, ADDED SIMPLE FADE) -->
+        <!-- HEADER -->
         <header class="border-b border-gray-800 bg-gray-900/90 sticky top-0 z-40 backdrop-blur-md jarvis-element">
             <div class="container mx-auto px-4 py-3 flex justify-between items-center">
                 <div class="flex items-center space-x-3 cursor-pointer" onclick="switchTab('home')">
@@ -752,7 +750,7 @@
                 </div>
             </section>
 
-            <!-- 4. ARMURERIE (REFONTE TOTALE VISUELLE) -->
+            <!-- 4. ARMURERIE -->
             <section id="arsenal" class="section-content fade-in hidden">
                 <div class="flex items-center justify-between mb-8 border-b border-gray-800 pb-4">
                     <h2 class="text-3xl text-white">Arsenal & Logistique</h2>
@@ -764,7 +762,7 @@
                 </div>
             </section>
 
-            <!-- 5. HANGAR (NEW) -->
+            <!-- 5. HANGAR -->
             <section id="hangar" class="section-content fade-in hidden">
                 <div class="flex items-center justify-between mb-8 border-b border-gray-800 pb-4">
                     <h2 class="text-3xl text-white">Hangar Tactique</h2>
@@ -776,7 +774,7 @@
                 </div>
             </section>
 
-            <!-- 6. MÉDAILLES (NEW & IMPROVED) -->
+            <!-- 6. MÉDAILLES -->
             <section id="medals" class="section-content fade-in hidden">
                 <div class="flex items-center justify-center mb-10">
                     <i data-lucide="award" class="text-yellow-500 w-12 h-12 mr-4"></i>
@@ -1007,8 +1005,6 @@
         lucide.createIcons();
 
         // --- DATA REPOSITORY ---
-        // [IMAGE] Pour chaque membre, remplacez la valeur de 'image' par le nom de votre fichier (ex: "wolffe.jpg")
-        // Assurez-vous que les images sont dans le même dossier ou indiquez le chemin correct.
         const membersData = [
             {
                 id: "plo",
@@ -1136,9 +1132,7 @@
             }
         ];
 
-        // Arsenal Data with Stats (UPDATED COLORS)
-        // [IMAGE] Pour chaque arme, le système cherche une image correspondant à l'ID (ex: "dc15s.jpg")
-        // Vous pouvez ajouter une propriété 'imagePath' si vous voulez spécifier un chemin précis.
+        // Arsenal Data with Stats
         const arsenalData = [
             {
                 id: "dc15s",
@@ -1293,13 +1287,12 @@
         ];
 
         // Medals Data (UPDATED WITH IMAGES)
-        // [IMAGE] Ajoutez vos images de médailles ici (ex: ./img/medal_ardent.png)
         const medalsData = [
             { 
                 id: "ardent", 
                 name: "Médaille du Loup Ardent", 
                 image: "./img/loupardent.png", 
-                color: "border-orange-500", 
+                color: "border-blue-700", 
                 desc: "Elle symbolise le courage, la détermination et la capacité à agir sous pression, même face à un danger imminent." 
             },
             { 
@@ -1401,7 +1394,7 @@
             showModal(content);
         }
 
-        // 1. Terminal Boot Sequence (ANIMATED & INFINITE)
+        // 1. Terminal Boot Sequence
         async function runBootSequence() {
             const screen = document.getElementById('boot-screen');
             const logs = document.getElementById('terminal-logs');
@@ -1478,7 +1471,6 @@
                             setTimeout(() => {
                                 el.classList.add('phase-3'); // Stabilize BG
                                 el.classList.add('phase-4'); // Show Content
-                                // FIX BUG FLICKER: Once done, switch to stable phase 5
                                 setTimeout(() => {
                                     el.classList.remove('phase-4');
                                     el.classList.add('phase-5'); 
@@ -1586,7 +1578,7 @@
             lucide.createIcons();
         }
 
-        // 3.5 Render Hangar Grid (UPDATED to match Arsenal style)
+        // 3.5 Render Hangar Grid
         function renderHangar() {
             const grid = document.getElementById('vehicle-grid');
             grid.innerHTML = vehiclesData.map(v => {
@@ -1676,7 +1668,7 @@
             
             if(!a) return;
 
-            // Video logic (Use Image if no video or if vehicle modal requested image)
+            // Video logic
             let mediaHtml = '';
             if (isVehicle) {
                 // Vehicle modal uses image
