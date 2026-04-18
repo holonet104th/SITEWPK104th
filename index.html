@@ -1153,7 +1153,7 @@
                 icon: "target",
                 color: "blue", 
                 image: "./img/dc15le.jpg",
-                desc: "La DC-15A Recon MKIII est un fusil de haute précision. Modulable a toute situation, ainsi que sa longue portée et sa puissance en font une arme très efficace sur le champ de bataille. Elle est l'arme coeur de la Wolfpack",
+                desc: "La DC-15A Recon MKIII est un fusil de haute précision. Modulable à toute situation, ainsi que sa longue portée et sa puissance en font une arme très efficace sur le champ de bataille. Elle est l'arme coeur de la Wolfpack",
                 manu: "Blastech Industries",
                 stats: { power: 95, range: 100, rate: 30, stability: 80 },
                 video: "./img/dc15le.webm"
@@ -1235,6 +1235,18 @@
         // Vehicles Data
         const vehiclesData = [
             { 
+                id: "at-rt", 
+                name: "AT-RT", 
+                type: "Reconnaissance Transport", 
+                image: "./img/at-rt.jpg", 
+                desc: "Transport de reconnaissance tout-terrain. Pilotable par l'ensemble de la Wolfpack pour le soutien de reconnaissance", 
+                manu: "Rothana Heavy Engineering",
+                pilots: [
+                    {name: "Wolfpack", img: "./img/wolffe.webm"}
+                ],
+                stats: { speed: 80, firepower: 50, armor: 20, maneuverability: 80 }
+            },
+            { 
                 id: "arc170", 
                 name: "Chasseur ARC-170", 
                 type: "Chasseur Lourd", 
@@ -1271,18 +1283,6 @@
                     {name: "Tracer", img: "./img/tracer.webm"}
                 ],
                 stats: { speed: 50, firepower: 40, armor: 90, maneuverability: 45 }
-            },
-            { 
-                id: "at-rt", 
-                name: "AT-RT", 
-                type: "Reconnaissance Transport", 
-                image: "./img/at-rt.jpg", 
-                desc: "Transport de reconnaissance tout-terrain. Pilotable par l'ensemble de la Wolfpack pour le soutien de reconnaissance", 
-                manu: "Rothana Heavy Engineering",
-                pilots: [
-                    {name: "Wolfpack", img: "./img/wolffe.webm"}
-                ],
-                stats: { speed: 80, firepower: 50, armor: 20, maneuverability: 80 }
             }
         ];
 
