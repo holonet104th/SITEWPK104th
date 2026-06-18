@@ -41,18 +41,6 @@
 }
 .honor p { font-size: var(--t-sm); color: var(--ink-soft); line-height: var(--lh-body); max-width: 60ch; }
 
-.crocs__limit {
-  margin-top: var(--space-6);
-  padding-top: var(--space-4);
-  border-top: 1px solid var(--line);
-  text-align: center;
-  font-family: var(--font-mono);
-  font-size: var(--t-xs);
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--ink-mute);
-}
-
 /* ---- Échelle de hiérarchie ----------------------------- */
 .crocs__ladder { background: oklch(0.12 0.01 255 / 0.5); }
 .crocs__ladder-h {
