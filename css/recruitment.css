@@ -1,0 +1,134 @@
+/* ============================================================
+   RECRUTEMENT — protocoles de sélection + voie de l'ARC
+   Engagement diégétique : contact direct sur le terrain,
+   aucune candidature électronique.
+   ============================================================ */
+
+.recruit-hero { text-align: center; margin-bottom: var(--space-7); }
+.recruit-hero__title {
+  font-size: var(--t-2xl);
+  color: var(--ink);
+}
+.recruit-hero__bar {
+  width: 96px; height: 3px;
+  margin: var(--space-3) auto var(--space-4);
+  background: var(--cyan);
+  box-shadow: 0 0 10px var(--cyan-haze);
+  border-radius: 999px;
+}
+.recruit-hero__creed {
+  max-width: 56ch;
+  margin-inline: auto;
+  font-family: var(--font-display);
+  font-style: italic;
+  font-size: var(--t-lg);
+  color: var(--ink-soft);
+  text-wrap: balance;
+}
+
+.recruit {
+  display: grid;
+  gap: var(--space-5);
+  grid-template-columns: 1fr;
+  align-items: start;
+}
+@media (min-width: 880px) { .recruit { grid-template-columns: 1fr 1fr; } }
+
+.recruit__h {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  font-size: var(--t-lg);
+  color: var(--ink);
+  margin-bottom: var(--space-5);
+}
+.recruit__h-ico {
+  display: grid; place-items: center;
+  width: 44px; height: 44px; flex: none;
+  border-radius: var(--r-sm);
+}
+.recruit__h-ico .ico { width: 22px; height: 22px; }
+
+/* ---- Colonne protocoles -------------------------------- */
+.recruit__col--proto { display: flex; flex-direction: column; }
+.recruit__col--proto .recruit__h-ico { background: var(--wolf-haze); border: 1px solid oklch(from var(--wolf) l c h / 0.4); }
+.recruit__col--proto .recruit__h-ico .ico { color: var(--cyan); }
+
+.reqs { list-style: none; display: grid; gap: var(--space-5); }
+.req { display: grid; grid-template-columns: auto 1fr; gap: var(--space-4); align-items: start; }
+.req__ico { width: 22px; height: 22px; margin-top: 3px; flex: none; }
+.req__ico.is-ok   { color: var(--term); }
+.req__ico.is-warn { color: var(--gold); }
+.req__title {
+  display: block;
+  font-family: var(--font-display);
+  text-transform: uppercase;
+  font-size: var(--t-base);
+  color: var(--ink);
+  margin-bottom: var(--space-1);
+}
+.req p { font-size: var(--t-sm); color: var(--ink-soft); line-height: var(--lh-body); max-width: 52ch; }
+
+.recruit__contact {
+  margin-top: auto;
+  padding: var(--space-4);
+  text-align: center;
+  background: oklch(0.12 0.01 255 / 0.7);
+  border: 1px solid var(--cyan-haze);
+  border-radius: var(--r-sm);
+  font-family: var(--font-mono);
+  font-size: var(--t-sm);
+  letter-spacing: 0.08em;
+  color: var(--cyan);
+  animation: recruit-pulse 2.4s ease-in-out infinite;
+}
+@keyframes recruit-pulse { 50% { opacity: 0.55; } }
+
+/* ---- Colonne Voie de l'ARC ----------------------------- */
+.recruit__col--arc {
+  position: relative;
+  overflow: hidden;
+  background:
+    radial-gradient(130% 120% at 100% 0%, oklch(from var(--gold) l c h / 0.1), transparent 55%),
+    oklch(0.24 0.024 255 / 0.55);
+  border-color: oklch(from var(--gold) l c h / 0.4);
+}
+.recruit__col--arc .recruit__h-ico { background: oklch(from var(--gold) l c h / 0.15); border: 1px solid oklch(from var(--gold) l c h / 0.4); }
+.recruit__col--arc .recruit__h-ico .ico { color: var(--gold); }
+.recruit__arc-lead { font-size: var(--t-sm); color: var(--ink-soft); line-height: var(--lh-body); margin-bottom: var(--space-5); }
+.recruit__arc-lead strong { color: var(--gold); font-weight: 600; }
+
+.arc-box {
+  background: oklch(0.12 0.01 255 / 0.55);
+  border: 1px solid var(--line);
+  border-radius: var(--r-sm);
+  padding: var(--space-4);
+  margin-bottom: var(--space-5);
+}
+.arc-box__h {
+  font-family: var(--font-mono);
+  font-size: var(--t-xs);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--gold);
+  margin-bottom: var(--space-2);
+}
+.arc-box p { font-size: var(--t-xs); color: var(--ink-soft); line-height: var(--lh-body); }
+
+.arc-foot {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  font-family: var(--font-mono);
+  font-size: var(--t-xs);
+  color: var(--ink-mute);
+}
+.arc-foot .is-elite { color: var(--gold); }
+
+.section.is-active .recruit__col { animation: roster-rise var(--dur-slow) var(--ease-out-expo) both; }
+.section.is-active .recruit__col--arc { animation-delay: 90ms; }
+
+@media (prefers-reduced-motion: reduce) {
+  .recruit__contact { animation: none; }
+}

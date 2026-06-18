@@ -1,0 +1,143 @@
+/* ============================================================
+   ORDRE DES CROCS — code d'honneur + hiérarchie de duel
+   ============================================================ */
+
+.crocs {
+  display: grid;
+  gap: var(--space-5);
+  grid-template-columns: 1fr;
+}
+@media (min-width: 920px) { .crocs { grid-template-columns: 1.45fr 1fr; align-items: start; } }
+
+.crocs__h {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  font-size: var(--t-lg);
+  color: var(--ink);
+  margin-bottom: var(--space-5);
+}
+.crocs__h .ico { width: 22px; height: 22px; color: var(--alert); }
+
+/* ---- Code d'honneur : règles numérotées ---------------- */
+/* NB : ne pas nommer ces items « .rule » → collision avec le
+   séparateur 1px .rule de components.css. */
+.honor-list { list-style: none; display: grid; gap: var(--space-5); }
+.honor { display: grid; grid-template-columns: auto 1fr; gap: var(--space-4); align-items: start; }
+.honor__n {
+  font-family: var(--font-mono);
+  font-size: var(--t-xl);
+  font-weight: 700;
+  color: var(--alert);
+  line-height: 1;
+  width: 2ch;
+}
+.honor__title {
+  font-family: var(--font-display);
+  text-transform: uppercase;
+  font-size: var(--t-base);
+  color: var(--ink);
+  margin-bottom: var(--space-1);
+}
+.honor p { font-size: var(--t-sm); color: var(--ink-soft); line-height: var(--lh-body); max-width: 60ch; }
+
+.crocs__limit {
+  margin-top: var(--space-6);
+  padding-top: var(--space-4);
+  border-top: 1px solid var(--line);
+  text-align: center;
+  font-family: var(--font-mono);
+  font-size: var(--t-xs);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink-mute);
+}
+
+/* ---- Échelle de hiérarchie ----------------------------- */
+.crocs__ladder { background: oklch(0.12 0.01 255 / 0.5); }
+.crocs__ladder-h {
+  text-align: center;
+  font-family: var(--font-mono);
+  font-size: var(--t-sm);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ink-mute);
+  margin-bottom: var(--space-5);
+}
+
+.ladder { list-style: none; position: relative; display: grid; gap: var(--space-2); }
+.ladder::before {
+  content: '';
+  position: absolute;
+  left: 23px; top: 18px; bottom: 18px;
+  width: 2px; background: var(--line);
+  z-index: 0;
+}
+.ladder__rank {
+  position: relative; z-index: 1;
+  display: flex; align-items: center; gap: var(--space-3);
+  padding: var(--space-2) var(--space-3);
+  background: oklch(0.24 0.024 255 / 0.7);
+  border: 1px solid var(--line);
+  border-radius: var(--r-sm);
+  margin-left: var(--space-4);
+}
+.ladder__badge {
+  width: 34px; height: 34px; flex: none;
+  display: grid; place-items: center;
+  border-radius: 50%;
+  background: oklch(0.16 0.018 255);
+  border: 1px solid var(--line-strong);
+  font-family: var(--font-mono);
+  font-size: var(--t-xs);
+  color: var(--ink-soft);
+}
+.ladder__name { font-family: var(--font-mono); font-size: var(--t-sm); color: var(--ink-soft); }
+.ladder__dist { display: block; font-family: var(--font-mono); font-size: 0.6rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--gold); }
+
+/* Croc Alpha — sommet */
+.ladder__rank--alpha {
+  margin-left: 0;
+  margin-bottom: var(--space-3);
+  background: oklch(from var(--gold) l c h / 0.12);
+  border-color: oklch(from var(--gold) l c h / 0.5);
+}
+.ladder__rank--alpha .ladder__badge {
+  width: 46px; height: 46px;
+  background: oklch(from var(--gold) l c h / 0.2);
+  border-color: var(--gold);
+  color: var(--gold);
+  font-size: var(--t-sm);
+  box-shadow: 0 0 14px oklch(from var(--gold) l c h / 0.3);
+}
+.ladder__rank--alpha .ladder__name { color: var(--ink); }
+
+.ladder__gap {
+  margin-left: 46px;
+  text-align: center;
+  color: var(--ink-mute);
+  letter-spacing: 0.4em;
+  font-size: var(--t-sm);
+  padding: var(--space-1) 0;
+}
+.ladder__rank--initie { opacity: 0.7; margin-bottom: 0; }
+.ladder__rank--initie .ladder__badge { color: var(--ink-mute); }
+
+.crocs__quote {
+  margin-top: var(--space-5);
+  padding: var(--space-4);
+  text-align: center;
+  background: oklch(from var(--alert) l c h / 0.1);
+  border: 1px solid oklch(from var(--alert) l c h / 0.3);
+  border-radius: var(--r-sm);
+  font-family: var(--font-display);
+  font-style: italic;
+  font-size: var(--t-sm);
+  color: var(--alert);
+}
+
+.section.is-active .honor,
+.section.is-active .ladder__rank { animation: roster-rise var(--dur-mid) var(--ease-out-expo) both; }
+.section.is-active .honor:nth-child(2) { animation-delay: 70ms; }
+.section.is-active .honor:nth-child(3) { animation-delay: 140ms; }
+.section.is-active .honor:nth-child(4) { animation-delay: 210ms; }

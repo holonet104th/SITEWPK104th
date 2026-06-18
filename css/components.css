@@ -1,0 +1,130 @@
+/* ============================================================
+   Composants réutilisables
+   ============================================================ */
+
+/* ---- Panneau holographique ----------------------------- */
+.panel {
+  position: relative;
+  background: oklch(0.24 0.024 255 / 0.55);
+  border: 1px solid var(--line);
+  border-radius: var(--r-md);
+  box-shadow: var(--shadow-1);
+  backdrop-filter: blur(5px);
+  overflow: hidden;
+}
+.panel--pad { padding: clamp(1.25rem, 3vw, 2rem); }
+/* coin tactique discret en haut à droite */
+.panel--corner::after {
+  content: '';
+  position: absolute; top: 8px; right: 8px;
+  width: 12px; height: 12px;
+  border-top: 2px solid var(--wolf);
+  border-right: 2px solid var(--wolf);
+  opacity: 0.7;
+}
+.panel--accent { box-shadow: var(--shadow-1), inset 0 1px 0 var(--cyan-haze); }
+
+/* ---- Boutons ------------------------------------------- */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-3) var(--space-5);
+  font-family: var(--font-display);
+  font-size: var(--t-sm);
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--r-sm);
+  color: var(--ink-soft);
+  background: oklch(0.24 0.024 255 / 0.5);
+  transition: border-color var(--dur-fast), background var(--dur-fast), color var(--dur-fast), transform var(--dur-fast) var(--ease-out-quart);
+}
+.btn:hover { transform: translateY(-2px); }
+.btn:active { transform: translateY(0); }
+.btn .ico { width: 18px; height: 18px; }
+.btn--primary {
+  color: var(--cyan);
+  border-color: var(--wolf);
+  background: var(--wolf-haze);
+}
+.btn--primary:hover { border-color: var(--cyan); box-shadow: 0 0 16px var(--cyan-haze); color: var(--cyan-glow); }
+.btn--ghost:hover { border-color: var(--wolf); color: var(--ink); }
+
+/* ---- Chips de statut ----------------------------------- */
+.chip {
+  display: inline-flex; align-items: center; gap: var(--space-2);
+  font-family: var(--font-mono); font-size: var(--t-xs);
+  letter-spacing: 0.08em; text-transform: uppercase;
+  padding: var(--space-1) var(--space-3);
+  border: 1px solid var(--line); border-radius: 999px;
+  color: var(--ink-soft);
+}
+.chip--live { color: var(--term); border-color: oklch(0.86 0.20 145 / 0.4); }
+.chip--live .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--term); box-shadow: 0 0 8px var(--term); animation: pulse-dot 2s infinite; }
+.chip--auth { color: var(--cyan); border-color: var(--cyan-haze); }
+
+/* ---- Filet séparateur ---------------------------------- */
+.rule { height: 1px; background: var(--line); border: 0; margin-block: var(--space-3); }
+
+/* ---- Barres de stats ----------------------------------- */
+.stat__head { display: flex; justify-content: space-between; font-size: var(--t-xs); color: var(--ink-soft); margin-bottom: var(--space-1); font-family: var(--font-mono); }
+.stat__track { height: 5px; background: var(--surface); border-radius: 999px; overflow: hidden; }
+.stat__fill { height: 100%; border-radius: 999px; }
+
+/* ---- Modale (native dialog) ---------------------------- */
+.modal {
+  width: min(94vw, 720px);
+  max-height: 88vh;
+  margin: auto;                 /* recentre le dialog (annule le reset * { margin:0 }) */
+  padding: 0;
+  border: 1px solid var(--wolf);
+  border-radius: var(--r-md);
+  background: oklch(0.16 0.018 255 / 0.97);
+  color: var(--ink);
+  box-shadow: 0 0 60px oklch(0 0 0 / 0.8), inset 0 0 24px var(--wolf-haze);
+  overflow: hidden;
+}
+.modal::backdrop {
+  background: oklch(0 0 0 / 0.78);
+  backdrop-filter: blur(4px);
+}
+.modal[open] { animation: modal-in var(--dur-mid) var(--ease-out-expo); }
+@keyframes modal-in {
+  from { opacity: 0; transform: translateY(10px) scale(0.97); }
+  to   { opacity: 1; transform: none; }
+}
+.modal__body { padding: clamp(1.25rem, 4vw, 2rem); overflow-y: auto; max-height: calc(88vh - 56px); }
+.modal__close {
+  position: absolute; top: var(--space-3); right: var(--space-3);
+  width: 36px; height: 36px; display: grid; place-items: center;
+  color: var(--ink-mute); border: 1px solid var(--line); border-radius: var(--r-sm);
+  transition: color var(--dur-fast), border-color var(--dur-fast);
+  z-index: 1;
+}
+.modal__close:hover { color: var(--alert); border-color: var(--alert); }
+@media (pointer: coarse) { .modal__close { width: 44px; height: 44px; } }
+.modal__foot {
+  display: flex; justify-content: space-between;
+  padding: var(--space-3) var(--space-5);
+  border-top: 1px solid var(--line);
+  font-family: var(--font-mono); font-size: var(--t-xs); color: var(--ink-mute);
+}
+
+/* contenu type "fiche" injecté dans la modale */
+.dossier__title { font-size: var(--t-xl); color: var(--ink); }
+.dossier__type  { font-family: var(--font-mono); font-size: var(--t-sm); color: var(--wolf-bright); }
+.dossier__grid  { display: grid; gap: var(--space-5); margin-top: var(--space-4); }
+@media (min-width: 620px) { .dossier__grid { grid-template-columns: 2fr 1fr; } }
+.dossier__brief {
+  font-size: var(--t-sm); color: var(--ink-soft); line-height: var(--lh-body);
+  background: oklch(0.24 0.024 255 / 0.4); padding: var(--space-4); border-radius: var(--r-sm);
+}
+.dossier__out {
+  background: oklch(0.12 0.01 255 / 0.5); border: 1px solid var(--line);
+  padding: var(--space-4); border-radius: var(--r-sm);
+}
+.dossier__out .val { font-family: var(--font-mono); font-size: var(--t-sm); }
+.is-ok { color: var(--term); }
+.is-warn { color: var(--gold); }
+.is-bad { color: var(--alert); }

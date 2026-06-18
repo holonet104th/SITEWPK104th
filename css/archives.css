@@ -1,0 +1,96 @@
+/* ============================================================
+   ARCHIVES — dossiers classifiés (timeline chronologique)
+   Séquence ordonnée #01 → #04 : la numérotation porte le sens.
+   ============================================================ */
+
+.dossiers {
+  list-style: none;
+  position: relative;
+  display: grid;
+  gap: var(--space-5);
+  max-width: 880px;
+}
+/* rail vertical reliant les dossiers */
+.dossiers::before {
+  content: '';
+  position: absolute;
+  left: 23px; top: 12px; bottom: 12px;
+  width: 2px;
+  background: linear-gradient(to bottom, var(--line), var(--line) 92%, transparent);
+}
+
+.dossier-file { --phase: var(--wolf-bright); position: relative; padding-left: 68px; }
+.dossier-file--crit    { --phase: var(--alert); }
+.dossier-file--refonte { --phase: var(--cyan); }
+.dossier-file--actif   { --phase: var(--term); }
+
+.dossier-file__node {
+  position: absolute;
+  left: 0; top: 0;
+  width: 48px; height: 48px;
+  display: grid; place-items: center;
+  border-radius: 50%;
+  background: oklch(0.12 0.01 255);
+  border: 2px solid var(--phase);
+  box-shadow: 0 0 14px oklch(from var(--phase) l c h / 0.35);
+  font-family: var(--font-mono);
+  font-size: var(--t-sm);
+  color: var(--phase);
+  z-index: 1;
+}
+
+.dossier-file__panel {
+  background: oklch(0.24 0.024 255 / 0.5);
+  border: 1px solid var(--line);
+  border-radius: var(--r-md);
+  padding: clamp(1.1rem, 3vw, 1.75rem);
+  box-shadow: var(--shadow-1);
+  transition: border-color var(--dur-mid) var(--ease-out-quart), box-shadow var(--dur-mid);
+}
+.dossier-file:hover .dossier-file__panel {
+  border-color: oklch(from var(--phase) l c h / 0.5);
+  box-shadow: var(--shadow-2);
+}
+
+.dossier-file__head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-3);
+  flex-wrap: wrap;
+  padding-bottom: var(--space-3);
+  margin-bottom: var(--space-4);
+  border-bottom: 1px solid var(--line);
+}
+.dossier-file__kicker { font-family: var(--font-mono); font-size: var(--t-xs); color: var(--ink-mute); letter-spacing: 0.08em; }
+.dossier-file__title {
+  font-family: var(--font-display);
+  text-transform: uppercase;
+  font-size: var(--t-lg);
+  color: var(--ink);
+}
+.dossier-file__phase {
+  font-family: var(--font-mono);
+  font-size: var(--t-xs);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--phase);
+  border: 1px solid oklch(from var(--phase) l c h / 0.45);
+  border-radius: var(--r-sm);
+  padding: 2px var(--space-2);
+  white-space: nowrap;
+}
+.dossier-file__body { display: grid; gap: var(--space-3); }
+.dossier-file__body p {
+  font-size: var(--t-sm);
+  line-height: var(--lh-body);
+  color: var(--ink-soft);
+  max-width: 68ch;
+}
+.dossier-file__body strong { color: var(--ink); font-weight: 600; }
+.dossier-file__body em { color: var(--cyan); font-style: italic; }
+
+.section.is-active .dossier-file { animation: roster-rise var(--dur-slow) var(--ease-out-expo) both; }
+.section.is-active .dossier-file:nth-child(2) { animation-delay: 80ms; }
+.section.is-active .dossier-file:nth-child(3) { animation-delay: 160ms; }
+.section.is-active .dossier-file:nth-child(4) { animation-delay: 240ms; }

@@ -1,0 +1,94 @@
+/* ============================================================
+   WOLFPACK OS — Design tokens
+   Direction "Holonet Republic" : terminal holographique militaire.
+   Identité conservée (bleu-gris + cyan holo), contrastes vérifiés AA.
+   ============================================================ */
+
+:root {
+  /* ---- Couleurs : surfaces ------------------------------- */
+  --void:        oklch(0.16 0.018 255);   /* fond profond, vide spatial */
+  --void-2:      oklch(0.21 0.022 255);   /* halo central du dégradé */
+  --surface:     oklch(0.24 0.024 255);   /* panneaux holo */
+  --surface-2:   oklch(0.29 0.026 255);   /* panneaux surélevés / hover */
+  --line:        oklch(0.40 0.03 255 / 0.45);  /* filets, séparateurs */
+  --line-strong: oklch(0.55 0.05 255 / 0.6);
+
+  /* ---- Couleurs : encre (texte) -------------------------- */
+  --ink:       oklch(0.92 0.012 255);   /* corps — ~13:1 sur --void */
+  --ink-soft:  oklch(0.80 0.018 255);   /* texte secondaire — ~8:1 */
+  --ink-mute:  oklch(0.66 0.022 255);   /* métadonnées — ~4.8:1 */
+
+  /* ---- Couleurs : identité & signaux --------------------- */
+  --wolf:        oklch(0.66 0.055 256);   /* bleu-gris militaire (identité) */
+  --wolf-bright: oklch(0.78 0.07 250);    /* bleu lisible pour texte/liens */
+  --wolf-dim:    oklch(0.50 0.05 256);
+
+  --cyan:        oklch(0.85 0.13 210);    /* cyan holo — accents/titres */
+  --cyan-glow:   oklch(0.90 0.16 205);    /* lueurs, bords sous tension */
+
+  --alert:       oklch(0.66 0.18 25);     /* rouge alerte — texte lisible */
+  --alert-deep:  oklch(0.42 0.13 25);     /* rouge fond/bord */
+  --term:        oklch(0.86 0.20 145);    /* vert terminal (statut OK) */
+  --gold:        oklch(0.80 0.13 85);     /* distinction / honneur */
+
+  /* halos translucides réutilisables */
+  --cyan-haze:   oklch(0.85 0.13 210 / 0.30);
+  --wolf-haze:   oklch(0.66 0.055 256 / 0.30);
+
+  /* ---- Typographie -------------------------------------- */
+  --font-display: 'Orbitron', 'Rajdhani', system-ui, sans-serif; /* logo + grands titres only */
+  --font-ui:      'Rajdhani', system-ui, 'Segoe UI', sans-serif; /* corps & UI */
+  --font-mono:    'Share Tech Mono', ui-monospace, 'SFMono-Regular', monospace; /* data/terminal */
+
+  /* échelle de type fluide (ratio ~1.25), bornée */
+  --t-xs:   0.78rem;
+  --t-sm:   0.875rem;
+  --t-base: 1.0625rem;                       /* 17px — corps */
+  --t-lg:   clamp(1.2rem, 0.9rem + 1.1vw, 1.45rem);
+  --t-xl:   clamp(1.5rem, 1.1rem + 1.8vw, 2rem);
+  --t-2xl:  clamp(2rem, 1.4rem + 2.6vw, 3rem);
+  --t-3xl:  clamp(2.6rem, 1.7rem + 3.6vw, 4.25rem);
+
+  --lh-tight: 1.12;
+  --lh-snug:  1.3;
+  --lh-body:  1.62;                          /* + air pour texte clair/sombre */
+  --measure:  68ch;
+
+  /* ---- Espacement (base 4pt) ---------------------------- */
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.5rem;
+  --space-6: 2rem;
+  --space-7: 3rem;
+  --space-8: 4rem;
+  --space-9: 6rem;
+  --gutter:  clamp(1rem, 0.5rem + 2.5vw, 2.5rem);
+
+  /* ---- Rayons & profondeur ------------------------------ */
+  --r-sm: 4px;
+  --r-md: 8px;
+  --r-lg: 12px;
+  --shadow-1: 0 2px 8px oklch(0 0 0 / 0.4);
+  --shadow-2: 0 10px 30px -8px oklch(0 0 0 / 0.6);
+  --shadow-glow: 0 0 22px var(--cyan-haze);
+
+  /* ---- Échelle z-index sémantique ----------------------- */
+  --z-base:        1;
+  --z-sticky:      100;   /* header */
+  --z-scanlines:   200;   /* overlay CRT (non bloquant) */
+  --z-dropdown:    300;   /* menu mobile */
+  --z-hud:         350;   /* bandeau décryptage (HUD transitoire) */
+  --z-modal:       400;   /* dialog */
+  --z-splash:      480;   /* écran d'accueil cinématique */
+  --z-boot:        500;   /* écran de démarrage */
+
+  /* ---- Mouvement ---------------------------------------- */
+  --ease-out-quart: cubic-bezier(0.25, 1, 0.5, 1);
+  --ease-out-quint: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-out-expo:  cubic-bezier(0.16, 1, 0.3, 1);
+  --dur-fast:  140ms;
+  --dur-mid:   260ms;
+  --dur-slow:  460ms;
+}

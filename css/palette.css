@@ -1,0 +1,127 @@
+/* ============================================================
+   Requête Holonet — palette de commande (dialog natif)
+   ============================================================ */
+
+.palette {
+  width: min(92vw, 620px);
+  max-height: 70vh;
+  margin-top: 12vh;            /* ancrée vers le haut */
+  margin-inline: auto;
+  padding: 0;
+  border: 1px solid var(--cyan-haze);
+  border-radius: var(--r-md);
+  background: oklch(0.14 0.016 255 / 0.98);
+  color: var(--ink);
+  box-shadow: 0 30px 80px -20px oklch(0 0 0 / 0.85), inset 0 0 30px var(--cyan-haze);
+  overflow: hidden;
+}
+.palette::backdrop {
+  background: oklch(0.05 0.01 255 / 0.6);
+  backdrop-filter: blur(3px);
+}
+.palette[open] { animation: palette-in var(--dur-mid) var(--ease-out-expo); }
+@keyframes palette-in {
+  from { opacity: 0; transform: translateY(-10px) scale(0.98); }
+  to   { opacity: 1; transform: none; }
+}
+
+/* ---- Barre de saisie ----------------------------------- */
+.palette__bar {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-4) var(--space-5);
+  border-bottom: 1px solid var(--line);
+  background: oklch(0.1 0.01 255 / 0.6);
+}
+.palette__prompt { width: 18px; height: 18px; color: var(--cyan); flex: none; }
+.palette__input {
+  flex: 1;
+  min-width: 0;
+  background: none;
+  border: none;
+  outline: none;
+  color: var(--ink);
+  font-family: var(--font-mono);
+  font-size: var(--t-base);
+}
+.palette__input::placeholder { color: var(--ink-mute); }
+.palette__esc {
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  color: var(--ink-mute);
+  border: 1px solid var(--line);
+  border-radius: 3px;
+  padding: 2px 6px;
+  flex: none;
+}
+
+/* ---- Liste de résultats -------------------------------- */
+.palette__list {
+  list-style: none;
+  margin: 0;
+  padding: var(--space-2);
+  overflow-y: auto;
+  max-height: calc(70vh - 112px);
+}
+.palette__opt {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3);
+  border-radius: var(--r-sm);
+  border: 1px solid transparent;
+  cursor: pointer;
+}
+.palette__opt .ico { width: 18px; height: 18px; color: var(--ink-mute); }
+.palette__opt-label { font-family: var(--font-ui); font-size: var(--t-sm); color: var(--ink); }
+.palette__opt-sub {
+  font-family: var(--font-mono);
+  font-size: var(--t-xs);
+  color: var(--ink-mute);
+  white-space: nowrap;
+}
+.palette__opt.is-active {
+  background: var(--wolf-haze);
+  border-color: var(--cyan);
+}
+.palette__opt.is-active .ico { color: var(--cyan); }
+.palette__opt.is-active .palette__opt-label { color: var(--cyan-glow); }
+
+.palette__empty {
+  padding: var(--space-5);
+  text-align: center;
+  font-family: var(--font-mono);
+  font-size: var(--t-sm);
+  color: var(--alert);
+  letter-spacing: 0.08em;
+}
+
+/* ---- Pied : aides clavier ------------------------------ */
+.palette__foot {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  flex-wrap: wrap;
+  padding: var(--space-2) var(--space-5);
+  border-top: 1px solid var(--line);
+  background: oklch(0.1 0.01 255 / 0.6);
+  font-family: var(--font-mono);
+  font-size: var(--t-xs);
+  color: var(--ink-mute);
+}
+.palette__foot kbd {
+  font-family: var(--font-mono);
+  border: 1px solid var(--line);
+  border-radius: 3px;
+  padding: 0 5px;
+  margin-right: 2px;
+  color: var(--ink-soft);
+}
+.palette__count { margin-left: auto; color: var(--wolf-bright); }
+
+@media (max-width: 560px) {
+  .palette__opt { grid-template-columns: auto 1fr; }
+  .palette__opt-sub { grid-column: 2; }
+}
