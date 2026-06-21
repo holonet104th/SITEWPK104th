@@ -147,6 +147,13 @@
   .nav__link { padding: var(--space-3) 0; border-bottom: 1px solid var(--line); }
   .nav__link[aria-current="page"]::after { display: none; }
 }
+/* header chargé sur petit écran : on libère la place pour les outils */
+@media (max-width: 600px) {
+  .readout--id { display: none; }
+  .signal span { display: none; }   /* on garde le point « en direct », on retire le texte */
+  .brand__id { display: none; }     /* emblème seul ; le wordmark reste sur l'accueil et partout ailleurs */
+  .statusbar__row { gap: var(--space-2); }
+}
 @media (prefers-reduced-motion: reduce) {
   .section.is-active { animation: none; }
   .signal__dot, .placeholder__sig { animation: none; }

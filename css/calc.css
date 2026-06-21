@@ -1,0 +1,149 @@
+/* ============================================================
+   Calcul de Triangulation — outil de tir (mortier / AV-7 / AV-8)
+   Modale dialog native, habillage Holonet.
+   ============================================================ */
+.calc {
+  width: min(94vw, 760px);
+  max-height: 90vh;
+  margin: auto;                 /* recentre le dialog (annule * { margin:0 }) */
+  padding: 0;
+  border: 1px solid var(--wolf);
+  border-radius: var(--r-md);
+  background: oklch(0.16 0.018 255 / 0.98);
+  color: var(--ink);
+  box-shadow: 0 0 60px oklch(0 0 0 / 0.8), inset 0 0 24px var(--wolf-haze);
+  overflow: hidden;
+}
+.calc::backdrop { background: oklch(0 0 0 / 0.78); backdrop-filter: blur(4px); }
+.calc[open] { animation: modal-in var(--dur-mid) var(--ease-out-expo); }
+
+.calc__head {
+  display: flex; align-items: flex-start; justify-content: space-between; gap: var(--space-4);
+  padding: var(--space-5) var(--space-5) var(--space-4);
+  border-bottom: 1px solid var(--line);
+  background: oklch(0.12 0.01 255 / 0.5);
+}
+.calc__title { font-size: var(--t-xl); color: var(--ink); }
+.calc__sub { font-family: var(--font-mono); font-size: var(--t-xs); color: var(--wolf-bright); letter-spacing: 0.04em; margin-top: var(--space-1); }
+
+.calc__body { padding: clamp(1.25rem, 4vw, 1.75rem); overflow-y: auto; max-height: calc(90vh - 92px); }
+
+/* ---- Formulaire ---------------------------------------- */
+.calc__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: var(--space-4);
+  margin-bottom: var(--space-5);
+}
+.field { display: flex; flex-direction: column; gap: var(--space-2); }
+.field label {
+  font-family: var(--font-mono); font-size: var(--t-xs);
+  letter-spacing: 0.06em; text-transform: uppercase; color: var(--ink-soft);
+}
+.field label span { color: var(--ink-mute); }
+.calc input {
+  padding: var(--space-3);
+  background: oklch(0.12 0.01 255 / 0.6);
+  border: 1px solid var(--line-strong);
+  border-radius: var(--r-sm);
+  color: var(--ink);
+  font-family: var(--font-mono);
+  font-size: var(--t-base);
+  transition: border-color var(--dur-fast), box-shadow var(--dur-fast);
+}
+.calc input:focus {
+  outline: none;
+  border-color: var(--cyan);
+  box-shadow: 0 0 0 3px var(--cyan-haze);
+}
+
+.calc__actions { display: flex; flex-wrap: wrap; gap: var(--space-3); }
+.calc__actions .btn { flex: 1 1 auto; justify-content: center; }
+
+/* ---- Erreur -------------------------------------------- */
+.calc__error {
+  display: none;
+  margin-top: var(--space-4);
+  padding: var(--space-3) var(--space-4);
+  border: 1px solid oklch(from var(--alert) l c h / 0.5);
+  background: oklch(from var(--alert) l c h / 0.12);
+  border-radius: var(--r-sm);
+  color: var(--alert);
+  font-size: var(--t-sm);
+}
+.calc__error.active { display: block; }
+
+/* ---- Résultats ----------------------------------------- */
+.calc__results { display: none; margin-top: var(--space-5); }
+.calc__results.active { display: block; }
+.calc__rh {
+  font-family: var(--font-mono); font-size: var(--t-xs); letter-spacing: 0.1em; text-transform: uppercase;
+  color: var(--ink-mute); padding-bottom: var(--space-2);
+  border-bottom: 1px solid var(--line); margin-bottom: var(--space-4);
+}
+
+.calc__metrics {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: var(--space-3);
+  margin-bottom: var(--space-5);
+}
+/* scopé sous .calc : « .readout » existe déjà dans le header (layout.css) */
+.calc .readout {
+  display: grid; gap: var(--space-1);
+  text-align: center;
+  padding: var(--space-4) var(--space-3);
+  background: oklch(0.12 0.01 255 / 0.5);
+  border: 1px solid var(--line);
+  border-radius: var(--r-sm);
+}
+.calc .readout__k { font-family: var(--font-mono); font-size: 0.6rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink-mute); }
+.calc .readout__v { font-family: var(--font-mono); font-size: var(--t-2xl); font-weight: 700; color: var(--cyan); line-height: 1; }
+.calc .readout__u { font-family: var(--font-mono); font-size: 0.6rem; color: var(--ink-mute); }
+
+/* ---- Boîte d'instruction (terminal) -------------------- */
+.calc__cmd {
+  background: oklch(0.1 0.012 255);
+  border: 1px solid oklch(from var(--term) l c h / 0.35);
+  border-radius: var(--r-sm);
+  padding: var(--space-4);
+  margin-bottom: var(--space-5);
+}
+.calc__cmd-top { display: flex; align-items: center; justify-content: space-between; gap: var(--space-3); margin-bottom: var(--space-3); }
+.calc__cmd-label { font-family: var(--font-mono); font-size: var(--t-xs); letter-spacing: 0.08em; color: var(--ink-mute); }
+.calc__cmd-line { font-family: var(--font-mono); font-size: var(--t-base); color: var(--term); line-height: 1.7; }
+.calc__cmd-line b { color: var(--gold); font-weight: 700; }
+
+/* bouton copier l'instruction (relais rapide) */
+.calc__copy {
+  display: inline-flex; align-items: center; gap: var(--space-2);
+  font-family: var(--font-mono); font-size: var(--t-xs); letter-spacing: 0.06em; text-transform: uppercase;
+  color: var(--term);
+  border: 1px solid oklch(from var(--term) l c h / 0.4);
+  border-radius: var(--r-sm);
+  padding: var(--space-2) var(--space-3);
+  background: oklch(from var(--term) l c h / 0.08);
+  transition: background var(--dur-fast), box-shadow var(--dur-fast);
+}
+.calc__copy:hover, .calc__copy:focus-visible { background: oklch(from var(--term) l c h / 0.16); box-shadow: 0 0 12px oklch(from var(--term) l c h / 0.25); }
+.calc__copy .ico { width: 14px; height: 14px; }
+
+.calc__tip { margin-top: var(--space-4); text-align: center; font-size: var(--t-xs); color: var(--ink-mute); letter-spacing: 0.04em; }
+
+/* saisie au doigt : champs et boutons plus grands sur écran tactile */
+@media (pointer: coarse) {
+  .calc input { min-height: 48px; }
+  .calc__copy { min-height: 44px; }
+  .calc__actions .btn { min-height: 48px; }
+}
+
+/* ---- Notes --------------------------------------------- */
+.calc__notes {
+  border: 1px solid oklch(from var(--gold) l c h / 0.3);
+  background: oklch(from var(--gold) l c h / 0.08);
+  border-radius: var(--r-sm);
+  padding: var(--space-4);
+}
+.calc__notes-h { font-family: var(--font-mono); font-size: var(--t-xs); letter-spacing: 0.08em; text-transform: uppercase; color: var(--gold); margin-bottom: var(--space-2); }
+.calc__notes ul { margin: 0; padding-left: 1.2em; }
+.calc__notes li { font-size: var(--t-sm); color: var(--ink-soft); line-height: var(--lh-body); }

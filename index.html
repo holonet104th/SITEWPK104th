@@ -29,6 +29,7 @@
   <link rel="stylesheet" href="./css/fx.css">
   <link rel="stylesheet" href="./css/palette.css">
   <link rel="stylesheet" href="./css/splash.css">
+  <link rel="stylesheet" href="./css/calc.css">
 </head>
 <body>
   <a class="skip-link" href="#main">Aller au contenu</a>
@@ -100,6 +101,9 @@
           <span>EN DIRECT</span>
         </div>
 
+        <button id="calc-open" class="iconbtn" type="button" aria-label="Calcul de triangulation" title="Calcul de triangulation — tir mortier / AV">
+          <i data-lucide="crosshair"></i>
+        </button>
         <button id="palette-open" class="iconbtn iconbtn--query" type="button" aria-label="Requête holonet (Ctrl + K)" title="Requête holonet — Ctrl K">
           <i data-lucide="search"></i>
           <kbd class="iconbtn__kbd">⌘K</kbd>
@@ -476,6 +480,78 @@
     </footer>
   </div>
 
+  <!-- ================= CALCUL DE TRIANGULATION ================= -->
+  <dialog id="calc" class="calc" aria-label="Calcul de triangulation">
+    <div class="calc__head">
+      <div>
+        <h2 class="calc__title display">Calcul de Triangulation</h2>
+        <p class="calc__sub">Coordonnées de tir · Mortier / AV-7 · AV-8</p>
+      </div>
+      <button id="calc-close" class="modal__close" type="button" aria-label="Fermer"><i data-lucide="x"></i></button>
+    </div>
+    <div class="calc__body">
+      <form id="calc-form" novalidate>
+        <div class="calc__grid">
+          <div class="field">
+            <label for="distCB">Distance C→B <span>(m)</span></label>
+            <input type="text" id="distCB" value="51" min="0" step="0.1" inputmode="decimal">
+          </div>
+          <div class="field">
+            <label for="azCB">Azimuth C→B <span>(°)</span></label>
+            <input type="text" id="azCB" value="221" min="0" max="360" step="0.1" inputmode="decimal">
+          </div>
+          <div class="field">
+            <label for="distAC">Distance C↔A <span>(m)</span></label>
+            <input type="text" id="distAC" value="51" min="0" step="0.1" inputmode="decimal">
+          </div>
+          <div class="field">
+            <label for="azCA">Azimuth C→A <span>(°)</span></label>
+            <input type="text" id="azCA" value="318" min="0" max="360" step="0.1" inputmode="decimal">
+          </div>
+          <div class="field">
+            <label for="denivel">Dénivelé A→B <span>(m)</span></label>
+            <input type="text" id="denivel" value="0" step="0.1" inputmode="decimal">
+          </div>
+        </div>
+        <div class="calc__actions">
+          <button class="btn btn--primary" type="button" id="calc-go"><i class="ico" data-lucide="crosshair"></i> Calculer</button>
+          <button class="btn btn--ghost" type="button" id="calc-reset"><i class="ico" data-lucide="rotate-ccw"></i> Réinitialiser</button>
+        </div>
+      </form>
+
+      <p class="calc__error" id="error" role="alert"></p>
+
+      <div class="calc__results" id="results" aria-live="polite">
+        <h3 class="calc__rh">Solution de tir</h3>
+        <div class="calc__metrics">
+          <div class="readout"><span class="readout__k">Azimuth A→B</span><span class="readout__v" id="azABValue">--</span><span class="readout__u">degrés</span></div>
+          <div class="readout"><span class="readout__k">Distance A→B</span><span class="readout__v" id="distABValue">--</span><span class="readout__u">mètres</span></div>
+          <div class="readout"><span class="readout__k">Élévation A→B</span><span class="readout__v" id="elevValue">--</span><span class="readout__u">degrés</span></div>
+        </div>
+        <div class="calc__cmd">
+          <div class="calc__cmd-top">
+            <span class="calc__cmd-label">// Instruction de tir</span>
+            <button id="calc-copy" class="calc__copy" type="button" aria-label="Copier l'instruction de tir">
+              <i class="ico" data-lucide="copy"></i> <span id="calc-copy-txt">Copier</span>
+            </button>
+          </div>
+          <p class="calc__cmd-line">AZIMUTH <b id="azABCommand">--</b>° &nbsp;·&nbsp; ÉLÉVATION <b id="elevCommand">--</b>° &nbsp;·&nbsp; PORTÉE <b id="distABCommand">--</b> m</p>
+        </div>
+        <div class="calc__notes">
+          <p class="calc__notes-h">Notes de terrain</p>
+          <ul>
+            <li>Azimuths relevés à la boussole (0° = Nord, 90° = Est).</li>
+            <li>Élévation positive = cible en hauteur ; négative = en contrebas.</li>
+            <li>L'équipage ajuste les premiers tirs selon l'impact observé.</li>
+            <li>Vérifiez distances et azimuths avant d'ouvrir le feu.</li>
+          </ul>
+        </div>
+      </div>
+
+      <p class="calc__tip mono">Entrée → champ suivant · valeurs mémorisées · accès rapide ⌘K → « tir »</p>
+    </div>
+  </dialog>
+
   <!-- ================= MODALE ================= -->
   <dialog id="modal" class="modal" aria-label="Dossier détaillé">
     <button id="modal-close" class="modal__close" type="button" aria-label="Fermer"><i data-lucide="x"></i></button>
@@ -490,6 +566,7 @@
   <script src="./js/fx.js"></script>
   <script src="./js/audio.js"></script>
   <script src="./js/palette.js"></script>
+  <script src="./js/calc.js"></script>
   <script src="./js/splash.js"></script>
   <script src="./js/app.js"></script>
   <script src="./js/boot.js"></script>

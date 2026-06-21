@@ -17,6 +17,11 @@ WPK.palette = (function () {
      ["hangar", "Hangar"], ["medals", "Médailles"], ["fangs", "Ordre des Crocs"], ["recruitment", "Recrutement"]
     ].forEach((s) => items.push({ label: s[1], sub: "Section", icon: "chevron-right", kw: s[0], run: () => WPK.app.goTo(s[0]) }));
 
+    // outil : calcul de triangulation (accès rapide « tir »)
+    items.push({ label: "Calcul de triangulation", sub: "Outil · tir mortier / AV",
+      icon: "crosshair", kw: "tir calcul mortier triangulation artillerie coordonnées",
+      run: () => { if (WPK.calc) WPK.calc.open(); } });
+
     (WPK.members || []).forEach((m) => items.push({ label: m.name, sub: "Effectif · " + m.rank, icon: "user",
       run: () => { WPK.app.goTo("members"); WPK.openMember(m.id); } }));
     (WPK.arsenal || []).forEach((a) => items.push({ label: a.name, sub: "Arme · " + a.type, icon: "crosshair",
